@@ -23,15 +23,21 @@ class PembinaanPendampinganSection extends Model
         return $this->belongsTo(FrekuensiPendampinganOption::class);
     }
 
-    // --- Jenis Pelatihan (checkbox)
+    // Checkbox: jenis pelatihan yang diikuti
     public function jenisPelatihanCheckboxes()
     {
-        return $this->belongsToMany(JenisPelatihanCheckbox::class);
+        return $this->belongsToMany(
+            JenisPelatihanCheckbox::class,
+            'jenis_pelatihan_checkbox_pembinaan_pendampingan_section'
+        );
     }
 
-    // --- Pelatihan Sangat Membantu (checkbox)
+    // Checkbox: pelatihan yang sangat membantu
     public function pelatihanSangatMembantuCheckboxes()
     {
-        return $this->belongsToMany(JenisPelatihanCheckbox::class);
+        return $this->belongsToMany(
+            JenisPelatihanCheckbox::class,
+            'pelatihan_sangat_membantu_checkbox_pembinaan_pendampingan_section'
+        );
     }
 }

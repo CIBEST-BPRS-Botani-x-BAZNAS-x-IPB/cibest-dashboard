@@ -22,6 +22,12 @@ return new class extends Migration
             $table->foreignId('pembinaan_pendampingan_section_id')->constrained()->cascadeOnDelete();
             $table->foreignId('jenis_pelatihan_checkbox_id')->constrained()->cascadeOnDelete();
         });
+
+        Schema::create('pelatihan_sangat_membantu_checkbox_pembinaan_pendampingan_section', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('pembinaan_pendampingan_section_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('jenis_pelatihan_checkbox_id')->constrained()->cascadeOnDelete();
+        });
     }
 
     /**
