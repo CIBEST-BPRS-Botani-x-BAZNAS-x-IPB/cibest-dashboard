@@ -39,20 +39,20 @@ class PembiayaanSyariahSection extends Model
     */
 
     // --- Akad Pembiayaan (checkbox)
-    public function akadPembiayaanOptions()
+    public function akadPembiayaanCheckboxes()
     {
-        return $this->belongsToMany(AkadPembiayaanOption::class);
+        return $this->belongsToMany(AkadPembiayaanCheckbox::class, 'akad_pembiayaan', 'pembiayaan_syariah_section_id', 'akad_pembiayaan_option_id');
     }
 
     // --- Penggunaan Pembiayaan (checkbox)
     public function penggunaanPembiayaanCheckboxes()
     {
-        return $this->belongsToMany(PenggunaanPembiayaanCheckbox::class);
+        return $this->belongsToMany(PenggunaanPembiayaanCheckbox::class, 'pembiayaan_penggunaan', 'pembiayaan_id', 'penggunaan_id');
     }
 
     // --- Pembiayaan Lain (checkbox)
     public function pembiayaanLainCheckboxes()
     {
-        return $this->belongsToMany(PembiayaanLainCheckbox::class);
+        return $this->belongsToMany(PembiayaanLainCheckbox::class, 'lain_syariah', 'syariah_id', 'lain_id');
     }
 }

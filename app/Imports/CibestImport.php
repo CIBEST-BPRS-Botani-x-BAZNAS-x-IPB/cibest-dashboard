@@ -2,6 +2,8 @@
 
 namespace App\Imports;
 
+use App\Models\AkadPembiayaanCheckbox;
+use App\Models\JangkaWaktuOption;
 use App\Models\JenisKelaminOption;
 use App\Models\KeteranganKebijakanPemerintahLikert;
 use App\Models\KeteranganLingkunganKeluargaLikert;
@@ -12,6 +14,7 @@ use App\Models\LembagaZiswafCheckbox;
 use App\Models\PembiayaanLainCheckbox;
 use App\Models\PendidikanFormalOption;
 use App\Models\PendidikanNonformalOption;
+use App\Models\PenggunaanPembiayaanCheckbox;
 use App\Models\ProgramBantuanCheckbox;
 use App\Models\StatusPerkawinanOption;
 use Carbon\Carbon;
@@ -266,7 +269,7 @@ class CibestImport implements ToCollection, WithStartRow, WithValidation, SkipsO
         return $map[$index] ?? null;
     }
 
-    private function getOptionId(string $model, string|null $value, int $index)
+    private function getOptionId(string $model, string|null $value, int $index): int|null
     {
         // Jika data kosong → kembalikan null
         if (!$value) {
@@ -287,7 +290,7 @@ class CibestImport implements ToCollection, WithStartRow, WithValidation, SkipsO
         return $record->id;
     }
 
-    private function getCheckboxId(string $model, string|null $values)
+    private function getCheckboxId(string $model, string|null $values): array|null
     {
         if (!$values) {
             return null;
@@ -351,8 +354,7 @@ class CibestImport implements ToCollection, WithStartRow, WithValidation, SkipsO
                 'memiliki_usaha_sendiri' => ($row[16] ?? null) === "Ya",
                 'rata_rata_profit'       => $row[17] ?? 0,
     
-                // // --- Bantuan ZISWAF ---
-                // 'bantuan_ziswaf_section_id' => $row['15. Apakah Anda pernah menerima ziswaf?'] ?? null,
+                // --- Bantuan ZISWAF ---
                 'bantuan_ziswaf_section' => $row[18] === 'Ya' ? 
                     [
                         'bulan_tahun_menerima' => Carbon::parse($row[3])->format('Y-m-d'),
@@ -375,8 +377,21 @@ class CibestImport implements ToCollection, WithStartRow, WithValidation, SkipsO
                     ]
                     : null,
     
-                // // --- Pembiayaan Syariah ---
-                // 'pembiayaan_syariah_section_id' => $row['23. Apakah Anda pernah menerima pembiayaan syariah?'] ?? null,
+                // --- Pembiayaan Syariah ---
+                'pembiayaan_syariah_section' => $row[33] === 'Ya' ? 
+                    [
+                        'bulan_tahun_menerima' => Carbon::parse($row[34])->format('Y-m-d'),
+                        'lembaga_keuangan_syariah' => $row[35],
+                        'akad_pembiayaan_checkbox' => $this->getCheckboxId(AkadPembiayaanCheckbox::class, $row[36]),
+                        'jangka_waktu_option_id' => $this->getOptionId(JangkaWaktuOption::class, $row[37], 37),
+                        'frekuensi_penerimaan' => $row[38],
+                        'total_nilai_pembiayaan' => $row[39],
+                        'penggunaan_pembiayaan_checkbox' => $this->getCheckboxId(PenggunaanPembiayaanCheckbox::class, $row[40]),
+                        'pembiayaan_lain_checkbox' => $this->getCheckboxId(PembiayaanLainCheckbox::class, $row[42]),
+                        'lembaga_syariah_lain' => $row[43],
+                        'lembaga_konvensional' => $row[44],
+                    ]
+                    : null,
     
                 // --- Pengeluaran Rumah Tangga ---
                 'pangan'            => $row[171] ?? 0,
@@ -466,8 +481,22 @@ class CibestImport implements ToCollection, WithStartRow, WithValidation, SkipsO
             '28' => 'nullable|integer|min:0',
             '29' => 'nullable|integer|min:0',
             '30' => 'nullable|integer|min:0',
-            '31' => 'required_if:18,Ya|in:Ya,Tidak',
+            '31' => 'required_if:18,Ya|nullable|in:Ya,Tidak',
             '32' => 'required_if:31,Ya|nullable|string',
+
+            // -- Bantuan Syariah
+            '33' => 'required|in:Ya,Tidak',
+            '34' => 'required_if:33,Ya|nullable|date',
+            '35' => 'required_if:33,Ya|nullable|string',
+            '36' => 'required_if:33,Ya|nullable|string',
+            '37' => 'required_if:33,Ya|nullable|string',
+            '38' => 'required_if:33,Ya|nullable|integer|min:0',
+            '39' => 'required_if:33,Ya|nullable|integer|min:0',
+            '40' => 'required_if:33,Ya|nullable|string',
+            '41' => 'required_if:33,Ya|nullable|in:Ya,Tidak',
+            '42' => 'required_if:41,Ya|nullable|string',
+            '43' => 'nullable|string',
+            '44' => 'nullable|string',
 
             // --- Pengeluaran Rumah Tangga
             '171' => 'nullable|integer|min:0',

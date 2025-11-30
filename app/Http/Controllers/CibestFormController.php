@@ -7,6 +7,7 @@ use App\Models\BantuanKonsumtifSection;
 use App\Models\BantuanProduktifSection;
 use App\Models\BantuanZiswafSection;
 use App\Models\CibestForm;
+use App\Models\PembiayaanSyariahSection;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
@@ -61,7 +62,7 @@ class CibestFormController extends Controller
 
                 // Main
                 $bantuanZiswaf = BantuanZiswafSection::create([
-                    ...Arr::except($row['bantuan_ziswaf_section'], 'lembaga_ziswaf_checkbox', 'program_bantuan_checkbox'),
+                    ...Arr::except($row['bantuan_ziswaf_section'], 'lembaga_ziswaf_checkbox', 'program_bantuan_checkbox', 'pembiayaan_lain_checkbox'),
                     'bantuan_konsumtif_section_id' => $bantuanKonsumtifSection->id,
                     'bantuan_produktif_section_id' => $bantuanProduktifSection->id,
                 ]);
@@ -72,8 +73,21 @@ class CibestFormController extends Controller
                 $bantuanZiswaf->pembiayaanLainCheckboxes()->sync(Arr::get($row, 'bantuan_ziswaf_section.pembiayaan_lain_checkbox'));
             }
 
+            $pembiayaanSyariah = null;
+            if ($row['pembiayaan_syariah_section']) {
+                // Main
+                $pembiayaanSyariah = PembiayaanSyariahSection::create([
+                    ...Arr::except($row['pembiayaan_syariah_section'], 'akad_pembiayaan_checkbox', 'penggunaan_pembiayaan_checkbox', 'pembiayaan_lain_checkbox'),
+                ]);
+
+                // Checkbox
+                $pembiayaanSyariah->akadPembiayaanCheckboxes()->sync(Arr::get($row, 'pembiayaan_syariah_section.akad_pembiayaan_checkbox'));
+                $pembiayaanSyariah->penggunaanPembiayaanCheckboxes()->sync(Arr::get($row, 'pembiayaan_syariah_section.penggunaan_pembiayaan_checkbox'));
+                $pembiayaanSyariah->pembiayaanLainCheckboxes()->sync(Arr::get($row, 'pembiayaan_syariah_section.pembiayaan_lain_checkbox'));
+            }
+
             $cibestForm = CibestForm::create([
-                ...Arr::except($row, 'bantuan_ziswaf_section'),
+                ...Arr::except($row, 'bantuan_ziswaf_section', 'pembiayaan_syariah_section'),
                 'bantuan_ziswaf_section_id' => $bantuanZiswaf->id ?? null,
                 'user_id' => Auth::user()->id,
             ]);

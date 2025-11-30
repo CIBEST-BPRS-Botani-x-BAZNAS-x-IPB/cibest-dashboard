@@ -16,4 +16,6 @@ class AkadPembiayaanCheckbox extends Model
      * @var bool
      */
     public $timestamps = false;
+
+    protected $fillable = ['value', 'is_other'];
 }
