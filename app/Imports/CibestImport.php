@@ -8,8 +8,11 @@ use App\Models\KeteranganLingkunganKeluargaLikert;
 use App\Models\KeteranganPuasaLikert;
 use App\Models\KeteranganShalatLikert;
 use App\Models\KeteranganZakatInfakLikert;
+use App\Models\LembagaZiswafCheckbox;
+use App\Models\PembiayaanLainCheckbox;
 use App\Models\PendidikanFormalOption;
 use App\Models\PendidikanNonformalOption;
+use App\Models\ProgramBantuanCheckbox;
 use App\Models\StatusPerkawinanOption;
 use Carbon\Carbon;
 use Exception;
@@ -81,7 +84,7 @@ class CibestImport implements ToCollection, WithStartRow, WithValidation, SkipsO
             32 => "22. Jika ya, dari siapa",
             33 => "23. Apakah Anda pernah menerima pembiayaan syariah?",
             34 => "24. Kapan pertama kali Anda mendapatkan bantuan pembiayaan syariah tersebut? Bulan………... Tahun……………",
-            35 => " 25. Apa nama lembaga keuangan syariah yang memberikan bantuan pembiayaan? Sebutkan……….",
+            35 => "25. Apa nama lembaga keuangan syariah yang memberikan bantuan pembiayaan? Sebutkan……….",
             36 => "26. Apa jenis akad pembiayaan yang digunakan?",
             37 => "27. Berapa lama jangka waktu pembiayaan yang diberikan?",
             38 => "28. Selama satu tahun terakhir sudah berapa kali Anda menerima bantuan pembiayaan syariah dari lembaga tersebut?....................kali.",
@@ -284,6 +287,41 @@ class CibestImport implements ToCollection, WithStartRow, WithValidation, SkipsO
         return $record->id;
     }
 
+    private function getCheckboxId(string $model, string|null $values)
+    {
+        if (!$values) {
+            return null;
+        }
+
+        // Pecah string berdasarkan koma atau spasi
+        $items = explode(', ', trim($values));
+
+        $ids = [];
+
+        foreach ($items as $item) {
+            $value = trim($item);
+
+            if ($value === '') {
+                continue;
+            }
+
+            // Cari record berdasarkan value
+            $record = $model::where('value', $value)->first();
+
+            // Jika tidak ada → buat baru
+            if (!$record) {
+                $record = $model::create([
+                    'value' => $value,
+                    'is_other' => true,
+                ]);
+            }
+
+            $ids[] = $record->id;
+        }
+
+        return $ids;
+    }
+
     public array $data = [];
 
     public function collection(Collection $rows)
@@ -291,8 +329,6 @@ class CibestImport implements ToCollection, WithStartRow, WithValidation, SkipsO
         foreach ($rows as $row)
         {
             $this->data[] = [
-                'user_id' => Auth::user()->id,
-    
                 // --- Enumerator ---
                 'nama_enumerator'           => $row[2],
                 'waktu_pengambilan_data'    => Carbon::parse($row[3])->format('Y-m-d'),
@@ -317,6 +353,27 @@ class CibestImport implements ToCollection, WithStartRow, WithValidation, SkipsO
     
                 // // --- Bantuan ZISWAF ---
                 // 'bantuan_ziswaf_section_id' => $row['15. Apakah Anda pernah menerima ziswaf?'] ?? null,
+                'bantuan_ziswaf_section' => $row[18] === 'Ya' ? 
+                    [
+                        'bulan_tahun_menerima' => Carbon::parse($row[3])->format('Y-m-d'),
+                        'lembaga_ziswaf_checkbox' => $this->getCheckboxId(LembagaZiswafCheckbox::class, $row[20]),
+                        'program_bantuan_checkbox' => $this->getCheckboxId(ProgramBantuanCheckbox::class, $row[21]),
+                        'frekuensi_penerimaan' => $row[22],
+                        'total_nilai_bantuan' => $row[23],
+                        'bantuan_konsumtif_section' => [
+                            'pangan' => $row[24] ?? 0,
+                            'kesehatan' => $row[25] ?? 0,
+                            'pendidikan' => $row[26] ?? 0,
+                            'lainnya' => $row[27] ?? 0,
+                        ],
+                        'bantuan_produktif_section' => [
+                            'modal_usaha' => $row[28] ?? 0,
+                            'peralatan_usaha' => $row[29] ?? 0,
+                            'lainnya' => $row[30] ?? 0,
+                        ],
+                        'pembiayaan_lain_checkbox' => $this->getCheckboxId(PembiayaanLainCheckbox::class, $row[32])
+                    ]
+                    : null,
     
                 // // --- Pembiayaan Syariah ---
                 // 'pembiayaan_syariah_section_id' => $row['23. Apakah Anda pernah menerima pembiayaan syariah?'] ?? null,
@@ -394,6 +451,23 @@ class CibestImport implements ToCollection, WithStartRow, WithValidation, SkipsO
             // --- Usaha dan Profit ---
             '16' => 'required|in:Ya,Tidak',
             '17' => 'nullable|integer|min:0',
+
+            // -- Bantuan Ziswaf
+            '18' => 'required|in:Ya,Tidak',
+            '19' => 'required_if:18,Ya|nullable|date',
+            '20' => 'required_if:18,Ya|nullable|string',
+            '21' => 'required_if:18,Ya|nullable|string',
+            '22' => 'required_if:18,Ya|nullable|integer|min:0',
+            '23' => 'required_if:18,Ya|nullable|integer|min:0',
+            '24' => 'nullable|integer|min:0',
+            '25' => 'nullable|integer|min:0',
+            '26' => 'nullable|integer|min:0',
+            '27' => 'nullable|integer|min:0',
+            '28' => 'nullable|integer|min:0',
+            '29' => 'nullable|integer|min:0',
+            '30' => 'nullable|integer|min:0',
+            '31' => 'required_if:18,Ya|in:Ya,Tidak',
+            '32' => 'required_if:31,Ya|nullable|string',
 
             // --- Pengeluaran Rumah Tangga
             '171' => 'nullable|integer|min:0',

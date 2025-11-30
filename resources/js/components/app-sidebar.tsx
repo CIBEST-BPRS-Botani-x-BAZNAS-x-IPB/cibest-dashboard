@@ -19,17 +19,17 @@ import AppLogo from './app-logo';
 const mainNavItems: NavItem[] = [
     {
         title: 'Dashboard',
-        href: dashboard(),
+        href: dashboard.url(),
         icon: LayoutGrid,
     },
     {
         title: 'CIBEST',
-        href: cibest(),
+        href: cibest.url(),
         icon: HandHeart,
     },
     {
         title: 'BAZNAS',
-        href: baznas(),
+        href: baznas.url(),
         icon: HandCoins,
     },
 ];

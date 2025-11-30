@@ -112,13 +112,13 @@ class CibestForm extends Model
     // --- II. Bantuan ZISWAF (one to one)
     public function bantuanZiswafSection()
     {
-        return $this->hasOne(BantuanZiswafSection::class);
+        return $this->belongsTo(BantuanZiswafSection::class);
     }
 
     // --- III. Pembiayaan Syariah
     public function pembiayaanSyariahSection()
     {
-        return $this->hasOne(PembiayaanSyariahSection::class);
+        return $this->belongsTo(PembiayaanSyariahSection::class);
     }
 
     // --- IV. Karakteristik Rumah Tangga (one-to-many)

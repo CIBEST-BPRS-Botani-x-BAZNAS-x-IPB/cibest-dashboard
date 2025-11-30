@@ -3,8 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Imports\CibestImport;
+use App\Models\BantuanKonsumtifSection;
+use App\Models\BantuanProduktifSection;
+use App\Models\BantuanZiswafSection;
 use App\Models\CibestForm;
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
 
 class CibestFormController extends Controller
@@ -45,8 +49,32 @@ class CibestFormController extends Controller
         }
 
         foreach ($import->data as $row) {
-            CibestForm::create([
-                ...$row,
+            $bantuanZiswaf = null;
+            if ($row['bantuan_ziswaf_section']) {
+                // Section
+                $bantuanKonsumtifSection = BantuanKonsumtifSection::create(
+                    Arr::get($row, 'bantuan_ziswaf_section.bantuan_konsumtif_section')
+                );
+                $bantuanProduktifSection = BantuanProduktifSection::create(
+                    Arr::get($row, 'bantuan_ziswaf_section.bantuan_konsumtif_section')
+                );
+
+                // Main
+                $bantuanZiswaf = BantuanZiswafSection::create([
+                    ...Arr::except($row['bantuan_ziswaf_section'], 'lembaga_ziswaf_checkbox', 'program_bantuan_checkbox'),
+                    'bantuan_konsumtif_section_id' => $bantuanKonsumtifSection->id,
+                    'bantuan_produktif_section_id' => $bantuanProduktifSection->id,
+                ]);
+
+                // Checkbox
+                $bantuanZiswaf->lembagaZiswafCheckboxes()->sync(Arr::get($row, 'bantuan_ziswaf_section.lembaga_ziswaf_checkbox'));
+                $bantuanZiswaf->programBantuanCheckboxes()->sync(Arr::get($row, 'bantuan_ziswaf_section.program_bantuan_checkbox'));
+                $bantuanZiswaf->pembiayaanLainCheckboxes()->sync(Arr::get($row, 'bantuan_ziswaf_section.pembiayaan_lain_checkbox'));
+            }
+
+            $cibestForm = CibestForm::create([
+                ...Arr::except($row, 'bantuan_ziswaf_section'),
+                'bantuan_ziswaf_section_id' => $bantuanZiswaf->id ?? null,
                 'user_id' => Auth::user()->id,
             ]);
         }

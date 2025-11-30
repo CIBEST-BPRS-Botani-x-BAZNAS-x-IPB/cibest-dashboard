@@ -14,8 +14,8 @@ class BantuanZiswafSection extends Model
         'bulan_tahun_menerima',
         'frekuensi_penerimaan',
         'total_nilai_bantuan',
-        'ziswaf_bantuan_konsumtif_section_id',
-        'ziswaf_bantuan_produktif_section_id',
+        'bantuan_konsumtif_section_id',
+        'bantuan_produktif_section_id',
     ];
 
     // --- Kembali ke CibestForm
@@ -46,18 +46,18 @@ class BantuanZiswafSection extends Model
     // --- Lembaga ZISWAF (checkbox)
     public function lembagaZiswafCheckboxes()
     {
-        return $this->belongsToMany(LembagaZiswafCheckbox::class);
+        return $this->belongsToMany(LembagaZiswafCheckbox::class, 'bantuan_lembaga', 'bantuan_id', 'lembaga_id');
     }
 
     // --- Program Bantuan (checkbox)
     public function programBantuanCheckboxes()
     {
-        return $this->belongsToMany(ProgramBantuanCheckbox::class);
+        return $this->belongsToMany(ProgramBantuanCheckbox::class, 'bantuan_program', 'bantuan_id', 'program_id');
     }
 
     // --- Pembiayaan Lain (checkbox)
     public function pembiayaanLainCheckboxes()
     {
-        return $this->belongsToMany(PembiayaanLainCheckbox::class);
+        return $this->belongsToMany(PembiayaanLainCheckbox::class, 'bantuan_pembiayaan', 'bantuan_id', 'lain_id');
     }
 }

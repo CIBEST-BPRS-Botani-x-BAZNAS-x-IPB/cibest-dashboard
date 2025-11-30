@@ -9,4 +9,6 @@ class BantuanProduktifSection extends Model
 {
     /** @use HasFactory<\Database\Factories\BantuanProduktifSectionFactory> */
     use HasFactory;
+
+    protected $fillable = ['modal_usaha', 'peralatan_usaha', 'lainnya'];
 }
