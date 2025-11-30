@@ -14,12 +14,11 @@ class JenisPekerjaanOptionSeeder extends Seeder
     public function run(): void
     {
         JenisPekerjaanOption::factory()->createMany([
-            ['value' => 'Karyawan swasta'],
-            ['value' => 'Petani'],
-            ['value' => 'Pedagang'],
-            ['value' => 'Buruh'],
-            ['value' => 'Nelayan'],
-            ['value' => 'Lainnya'],
+            ['value' => 'Karyawan swasta', 'is_other' => false],
+            ['value' => 'Petani', 'is_other' => false],
+            ['value' => 'Pedagang', 'is_other' => false],
+            ['value' => 'Buruh', 'is_other' => false],
+            ['value' => 'Nelayan', 'is_other' => false],
         ]);
     }
 }

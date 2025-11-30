@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('jenis_pekerjaan_options', function (Blueprint $table) {
             $table->id();
             $table->string('value')->unique();
+            $table->boolean('is_other')->default(true);
         });
     }
 
