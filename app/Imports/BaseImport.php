@@ -74,6 +74,20 @@ abstract class BaseImport implements ToCollection, WithStartRow, WithValidation,
         return $ids;
     }
 
+    protected function detectLembagaZiswaf(string $opzType, string $opzLevel): ?int
+    {
+        if ($opzType === 'laz') {
+            return 'LAZ';
+        }
+
+        if ($opzType === 'baz') {
+            return 'BAZNAS Provinsi/Daerah';
+        }
+
+        return $opzType . ' ' . $opzLevel;
+    }
+
+
     public array $data = [];
 
     abstract public function collection(Collection $rows);
