@@ -1,7 +1,7 @@
 import { Button } from '@/components/ui/button';
 import AppLayout from '@/layouts/app-layout';
 import { formatFileSize } from '@/lib/utils';
-import { cibest, cibestUpload } from '@/routes';
+import { baznas, baznasUpload } from '@/routes';
 import { type BreadcrumbItem } from '@/types';
 import { Head, router, usePage } from '@inertiajs/react';
 import { FileIcon, HardDrive, Upload } from 'lucide-react';
@@ -11,12 +11,12 @@ import { columns } from '@/components/table-error/column';
 
 const breadcrumbs: BreadcrumbItem[] = [
   {
-    title: 'CIBEST',
-    href: cibest().url,
+    title: 'BAZNAS',
+    href: baznas().url,
   },
 ];
 
-export default function Cibest() {
+export default function Baznas() {
   const inputRef = useRef<HTMLInputElement>(null);
   const [file, setFile] = useState<File | null>(null);
   const { flash } = usePage().props as {
@@ -39,16 +39,16 @@ export default function Cibest() {
   async function handleFileUpload() {
     if (!file) return;
 
-    router.post(cibestUpload.url(), {
+    router.post(baznasUpload.url(), {
       file: file
     });
   }
 
   return (
     <AppLayout breadcrumbs={breadcrumbs}>
-      <Head title="Survei CIBEST" />
+      <Head title="Survei BAZNAS" />
       <div className="flex h-full flex-col flex-1 gap-4 overflow-x-auto rounded-xl p-4">
-        <h1 className='font-bold'>Survei CIBEST</h1>
+        <h1 className='font-bold'>Survei BAZNAS</h1>
         <div className='flex flex-col w-fit h-fit gap-4'>
           <input
             ref={inputRef}

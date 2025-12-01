@@ -21,35 +21,14 @@ use App\Models\Province;
 use App\Models\StatusPekerjaanOption;
 use App\Models\StatusPerkawinanOption;
 use Carbon\Carbon;
-use Exception;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
-use Maatwebsite\Excel\Concerns\Importable;
-use Maatwebsite\Excel\Concerns\SkipsEmptyRows;
-use Maatwebsite\Excel\Concerns\SkipsFailures;
-use Maatwebsite\Excel\Concerns\SkipsOnFailure;
-use Maatwebsite\Excel\Concerns\ToCollection;
-use Maatwebsite\Excel\Concerns\WithStartRow;
-use Maatwebsite\Excel\Concerns\WithValidation;
-use Maatwebsite\Excel\Imports\HeadingRowFormatter;
-use phpDocumentor\Reflection\Types\This;
 
-HeadingRowFormatter::default('none');
-
-class CibestImport implements ToCollection, WithStartRow, WithValidation, SkipsOnFailure, SkipsEmptyRows
+class CibestImport extends BaseImport
 {   
-    use Importable, SkipsFailures;
-
     public function startRow(): int
     {
         return 2;
-    }
-
-    private $rows = 0;
-
-    public function getRowCount(): int
-    {
-        return $this->rows;
     }
 
     public function mapping(int $index): array|string|null
@@ -272,66 +251,6 @@ class CibestImport implements ToCollection, WithStartRow, WithValidation, SkipsO
         return $map[$index] ?? null;
     }
 
-    private function getOptionId(string $model, string|null $value, int $index, bool $allowIsOther = false): int|null
-    {
-        // Jika data kosong → kembalikan null
-        if (!$value) {
-            return null;
-        }
-
-        // Normalisasi whitespace
-        $value = trim($value);
-
-        // Query berdasarkan value
-        $record = $model::where('value', $value)->first();
-
-        // Jika tidak ditemukan → throw error
-        if (!$record) {
-            if (!$allowIsOther) 
-                throw new Exception("Nilai '{$value}' pada kolom '{$this->mapping($index)}' tidak ditemukan di tabel {$model}.");
-            return $model::create([
-                'value' => $value, 'is_other' => true
-            ])->id;
-        }
-
-        return $record->id;
-    }
-
-    private function getCheckboxId(string $model, string|null $values): array|null
-    {
-        if (!$values) {
-            return null;
-        }
-
-        // Pecah string berdasarkan koma atau spasi
-        $items = explode(', ', trim($values));
-
-        $ids = [];
-
-        foreach ($items as $item) {
-            $value = trim($item);
-
-            if ($value === '') {
-                continue;
-            }
-
-            // Cari record berdasarkan value
-            $record = $model::where('value', $value)->first();
-
-            // Jika tidak ada → buat baru
-            if (!$record) {
-                $record = $model::create([
-                    'value' => $value,
-                    'is_other' => true,
-                ]);
-            }
-
-            $ids[] = $record->id;
-        }
-
-        return $ids;
-    }
-
     private function getKarakteristikRumahTangga($row): array
     {
         $data = [];
@@ -387,8 +306,6 @@ class CibestImport implements ToCollection, WithStartRow, WithValidation, SkipsO
 
         return $data;
     }
-
-    public array $data = [];
 
     public function collection(Collection $rows)
     {

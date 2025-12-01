@@ -16,16 +16,20 @@ Route::middleware(['auth', 'verified'])->group(function () {
         return Inertia::render('dashboard');
     })->name('dashboard');
 
-    Route::get('cibest', function () {
-        return Inertia::render('cibest/index');
-    })->name('cibest');
-    Route::post('cibest/upload', 
-        [CibestFormController::class, 'uploadCibest']
-    )->name('cibest-upload');
+    Route::controller(CibestFormController::class)->group(function () {
+        Route::prefix('cibest')->group(function () {
+            Route::get('/', 'cibestIndex')->name('cibest');
+            Route::post('upload', 'uploadCibest')->name('cibest-upload');
+        });
 
-    Route::get('baznas', function () {
-        return Inertia::render('baznas');
-    })->name('baznas');
+        Route::prefix('baznas')->group(function () {
+            Route::get('/', 'baznasIndex')->name('baznas');
+            Route::post('upload', 'uploadBaznas')->name('baznas-upload');
+        });
+    });
+
+    
+
 });
 
 require __DIR__.'/settings.php';
