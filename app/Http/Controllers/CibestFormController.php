@@ -182,6 +182,23 @@ class CibestFormController extends Controller
             ]);
         }
 
+        foreach ($import->data as $row) {
+            $cibestForm = CibestForm::create([
+                ...Arr::except($row, 
+                    'bantuan_ziswaf_section', 
+                    'pembiayaan_syariah_section', 
+                    'karakteristik_rumah_tangga_section',
+                    'pendapatan_ketenagakerjaan_section',
+                    'pembinaan_pendampingan_section',
+                ),
+                // 'bantuan_ziswaf_section_id' => $bantuanZiswaf->id ?? null,
+                // 'pembiayaan_syariah_section_id' => $pembiayaanSyariah->id ?? null,
+                // 'pembinaan_pendampingan_section_id' => $pembinaanPendampingan->id ?? null,
+                'user_id' => Auth::user()->id,
+            ]);
+        }
+
+
         return redirect()->back()->with('success', "Berhasil upload file {$file->getClientOriginalName()}");
     }
 }
