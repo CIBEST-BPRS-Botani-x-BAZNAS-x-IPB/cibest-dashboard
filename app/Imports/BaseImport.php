@@ -74,7 +74,22 @@ abstract class BaseImport implements ToCollection, WithStartRow, WithValidation,
         return $ids;
     }
 
-    protected function detectLembagaZiswaf(string $opzType, string $opzLevel): ?int
+    protected function getLikertId(string $model, string|null $descriptionValue, int $index): int|null
+    {
+        if (!$descriptionValue) return null;
+
+        $descriptionValue = trim($descriptionValue);
+
+        $record = $model::where('description', $descriptionValue)->first();
+
+        if (!$record) {
+            throw new Exception("Nilai '{$descriptionValue}' pada kolom '{$this->mapping($index)}' tidak ditemukan di tabel {$model}.");
+        }
+
+        return $record->id;
+    }
+
+    protected function detectLembagaZiswaf(string $opzType, string $opzLevel): string
     {
         if ($opzType === 'laz') {
             return 'LAZ';

@@ -22,6 +22,7 @@ class PendidikanFormalOptionSeeder extends Seeder
             ['value' => 'SMA/SMK/SMALB/Paket C'],
             ['value' => 'Madrasah Aliyah'],
             ['value' => 'Perguruan tinggi (D1/D2/D3/S1)'],
+            ['value' => 'Tidak disebutkan'],
         ]);
     }
 }

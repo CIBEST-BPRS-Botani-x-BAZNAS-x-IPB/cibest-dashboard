@@ -16,6 +16,7 @@ class PendidikanNonformalOptionSeeder extends Seeder
         PendidikanNonformalOption::factory()->createMany([
             ['value' => 'Pernah mengikuti (ada sertifikat)'],
             ['value' => 'Tidak pernah mengikuti'],
+            ['value' => 'Tidak disebutkan'],
         ]);
     }
 }

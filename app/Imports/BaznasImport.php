@@ -239,9 +239,9 @@ class BaznasImport extends BaseImport
                 'desa_kelurahan'    => $row[27],
                 'usia'              => Carbon::now()->year - ($row[8] ?? Carbon::now()->year),
                 'jenis_kelamin_option_id'         => $this->getOptionId(JenisKelaminOption::class, $row[9] === 'P' ? 'Laki-laki' : 'Perempuan', 9),
-                'status_perkawinan_option_id'     => null,
-                'pendidikan_formal_option_id'     => null,
-                'pendidikan_nonformal_option_id'  => null,
+                'status_perkawinan_option_id'     => $this->getOptionId(StatusPerkawinanOption::class, 'Tidak disebutkan', 9),
+                'pendidikan_formal_option_id'     => $this->getOptionId(PendidikanFormalOption::class, 'Tidak disebutkan', 9),
+                'pendidikan_nonformal_option_id'  => $this->getOptionId(PendidikanNonformalOption::class, 'Tidak disebutkan', 9),
 
                 // --- Usaha dan Profit ---
                 'memiliki_usaha_sendiri' => ($row[31] ?? null) === "Ya",
@@ -303,29 +303,29 @@ class BaznasImport extends BaseImport
 
                 // --- Tabungan ---
                 'memiliki_tabungan_bank_konvensional'     => ($row[17] ?? null) === "Ya",
-                'memiliki_tabungan_bank_syariah'          => null,
-                'memiliki_tabungan_koperasi_konvensional' => null,
-                'memiliki_tabungan_koperasi_syariah'      => null,
-                'memiliki_tabungan_lembaga_zakat'         => null,
-                'mengikuti_arisan_rutin'                  => null,
-                'memiliki_simpanan_rumah'                 => null,
+                'memiliki_tabungan_bank_syariah'          => false,
+                'memiliki_tabungan_koperasi_konvensional' => false,
+                'memiliki_tabungan_koperasi_syariah'      => false,
+                'memiliki_tabungan_lembaga_zakat'         => false,
+                'mengikuti_arisan_rutin'                  => false,
+                'memiliki_simpanan_rumah'                 => false,
 
                 // --- Spiritual Sebelum ---
-                'shalat_sebelum'               => $this->getOptionId(KeteranganShalatLikert::class, $row[40], 40),
-                'puasa_sebelum'                => $this->getOptionId(KeteranganPuasaLikert::class, $row[42], 42),
-                'zakat_infak_sebelum'          => $this->getOptionId(KeteranganZakatInfakLikert::class, $row[44], 44),
-                'lingkungan_keluarga_sebelum'  => $this->getOptionId(KeteranganLingkunganKeluargaLikert::class, $row[46], 46),
-                'kebijakan_pemerintah_sebelum' => $this->getOptionId(KeteranganKebijakanPemerintahLikert::class, $row[48], 48),
+                'shalat_sebelum'               => $this->getLikertId(KeteranganShalatLikert::class, $row[40], 40),
+                'puasa_sebelum'                => $this->getLikertId(KeteranganPuasaLikert::class, $row[42], 42),
+                'zakat_infak_sebelum'          => $this->getLikertId(KeteranganZakatInfakLikert::class, $row[44], 44),
+                'lingkungan_keluarga_sebelum'  => $this->getLikertId(KeteranganLingkunganKeluargaLikert::class, $row[46], 46),
+                'kebijakan_pemerintah_sebelum' => $this->getLikertId(KeteranganKebijakanPemerintahLikert::class, $row[48], 48),
 
                 // --- Spiritual Setelah ---
-                'shalat_setelah'               => $this->getOptionId(KeteranganShalatLikert::class, $row[41], 41),
-                'puasa_setelah'                => $this->getOptionId(KeteranganPuasaLikert::class, $row[43], 43),
-                'zakat_infak_setelah'          => $this->getOptionId(KeteranganZakatInfakLikert::class, $row[45], 45),
-                'lingkungan_keluarga_setelah'  => $this->getOptionId(KeteranganLingkunganKeluargaLikert::class, $row[47], 47),
-                'kebijakan_pemerintah_setelah' => $this->getOptionId(KeteranganKebijakanPemerintahLikert::class, $row[49], 49),
+                'shalat_setelah'               => $this->getLikertId(KeteranganShalatLikert::class, $row[41], 41),
+                'puasa_setelah'                => $this->getLikertId(KeteranganPuasaLikert::class, $row[43], 43),
+                'zakat_infak_setelah'          => $this->getLikertId(KeteranganZakatInfakLikert::class, $row[45], 45),
+                'lingkungan_keluarga_setelah'  => $this->getLikertId(KeteranganLingkunganKeluargaLikert::class, $row[47], 47),
+                'kebijakan_pemerintah_setelah' => $this->getLikertId(KeteranganKebijakanPemerintahLikert::class, $row[49], 49),
 
                 // --- Pembinaan & Pendampingan ---
-                'pembinaan_pendampingan_section' => $row[204] === 'Ya' ? 
+                'pembinaan_pendampingan_section' => ($row[37] === 'Ya') || ($row[38] === 'Ya') || ($row[39] === 'Ya') ? 
                     [
                         'pembinaan_spiritual' => ($row[37] ?? null) === "Ya",
                         'pembinaan_usaha' => ($row[38] ?? null) === "Ya",
@@ -386,18 +386,18 @@ class BaznasImport extends BaseImport
             '17' => 'required|in:Ya,Tidak',
 
             // --- Spiritual Sebelum ---
-            '40' => 'required|exists:keterangan_shalat_likerts,value', 
-            '42' => 'required|exists:keterangan_puasa_likerts,value', 
-            '44' => 'required|exists:keterangan_zakat_infak_likerts,value', 
-            '46' => 'required|exists:keterangan_lingkungan_keluarga_likerts,value',
-            '48' => 'required|exists:keterangan_kebijakan_pemerintah_likerts,value',
+            '40' => 'required|exists:keterangan_shalat_likerts,description', 
+            '42' => 'required|exists:keterangan_puasa_likerts,description', 
+            '44' => 'required|exists:keterangan_zakat_infak_likerts,description', 
+            '46' => 'required|exists:keterangan_lingkungan_keluarga_likerts,description',
+            '48' => 'required|exists:keterangan_kebijakan_pemerintah_likerts,description',
 
             // --- Spiritual Setelah ---
-            '41' => 'required|exists:keterangan_shalat_likerts,value',
-            '43' => 'required|exists:keterangan_puasa_likerts,value',
-            '45' => 'required|exists:keterangan_zakat_infak_likerts,value',
-            '47' => 'required|exists:keterangan_lingkungan_keluarga_likerts,value',
-            '49' => 'required|exists:keterangan_kebijakan_pemerintah_likerts,value',
+            '41' => 'required|exists:keterangan_shalat_likerts,description',
+            '43' => 'required|exists:keterangan_puasa_likerts,description',
+            '45' => 'required|exists:keterangan_zakat_infak_likerts,description',
+            '47' => 'required|exists:keterangan_lingkungan_keluarga_likerts,description',
+            '49' => 'required|exists:keterangan_kebijakan_pemerintah_likerts,description',
 
             // --- Pembinaan & Pendampingan ---
             '37' => 'required|in:Ya,Tidak',

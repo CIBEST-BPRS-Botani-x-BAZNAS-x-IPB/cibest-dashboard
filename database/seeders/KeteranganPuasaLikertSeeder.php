@@ -18,7 +18,7 @@ class KeteranganPuasaLikertSeeder extends Seeder
             ['value' => '2', 'description' => 'Menolak konsep puasa'],
             ['value' => '3', 'description' => 'Melaksanakan puasa wajib tidak penuh'],
             ['value' => '4', 'description' => 'Melaksanakan puasa wajib secara penuh'],
-            ['value' => '5', 'description' => 'Melaksanakan puasa wajib penuh dan puasa sunah'],
+            ['value' => '5', 'description' => 'Melaksanakan puasa wajib penuh dan puasa sunnah'],
         ]);
     }
 }

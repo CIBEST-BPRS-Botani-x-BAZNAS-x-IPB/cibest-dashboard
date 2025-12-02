@@ -18,6 +18,7 @@ class StatusPerkawinanOptionSeeder extends Seeder
             ['value' => 'Belum kawin'],
             ['value' => 'Cerai mati'],
             ['value' => 'Cerai hidup'],
+            ['value' => 'Tidak disebutkan'],
         ]);
     }
 }
