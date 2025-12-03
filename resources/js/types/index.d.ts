@@ -42,3 +42,14 @@ export interface User {
     updated_at: string;
     [key: string]: unknown; // This allows for additional properties...
 }
+
+interface QuadrantData {
+  id: number;
+  name: string;
+  before: {
+    [key: number]: number;
+  };
+  after: {
+    [key: number]: number;
+  };
+}

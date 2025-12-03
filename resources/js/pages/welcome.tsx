@@ -4,17 +4,21 @@ import { ProvinceTable } from "@/components/province-table"
 import { StandardTables } from "@/components/standard-tables"
 import { IndicatorsTable } from "@/components/indicators-table"
 import { DashboardFooter } from "@/components/dashboard-footer"
-import { cibest } from "@/data/cibest-data"
 import { Link, usePage } from "@inertiajs/react"
-import { SharedData } from "@/types"
+import { QuadrantData, SharedData } from "@/types"
 import { dashboard, login, register } from "@/routes"
 
 export default function Welcome({
   canRegister = true,
+  respondentCount,
+  quadrantDistribution
 }: {
   canRegister?: boolean;
+  respondentCount: number;
+  quadrantDistribution: QuadrantData[];
 }) {
   const { auth } = usePage<SharedData>().props;
+
   return (
     <main className="min-h-screen bg-gray-50">
       {/* Header */}
@@ -27,7 +31,9 @@ export default function Welcome({
             </div>
             <div className="text-right">
               <p className="text-sm text-gray-600">Jumlah Responden</p>
-              <p className="text-3xl font-bold text-teal-600">{cibest.respondentCount.toLocaleString()}</p>
+              <p className="text-3xl font-bold text-teal-600">
+                {respondentCount}
+              </p>
             </div>
             <nav className="flex items-center justify-end gap-4">
               {auth.user ? (
@@ -62,7 +68,7 @@ export default function Welcome({
 
       {/* Content */}
       <div className="max-w-7xl mx-auto px-4 py-8">
-        <QuadrantDistribution />
+        <QuadrantDistribution quadrantData={quadrantDistribution} />
         <IndonesiaMap />
         <div className="mt-6">
           <ProvinceTable />

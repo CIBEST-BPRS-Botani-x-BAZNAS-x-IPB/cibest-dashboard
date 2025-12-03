@@ -8,6 +8,7 @@ use App\Models\BantuanKonsumtifSection;
 use App\Models\BantuanProduktifSection;
 use App\Models\BantuanZiswafSection;
 use App\Models\CibestForm;
+use App\Models\CibestQuadrant;
 use App\Models\KarakteristikRumahTanggaSection;
 use App\Models\PembiayaanSyariahSection;
 use App\Models\PembinaanPendampinganSection;
@@ -140,11 +141,13 @@ class CibestFormController extends Controller
                 }
             }
 
-            // Hitung kuadran setelah semua data disimpan dan simpan ke pivot table
+            // Hitung kuadran setelah semua data disimpan dan simpan ke tabel cibest_quadrants
             $quadrantResults = $this->hitungKuadran($cibestForm);
 
             foreach ($quadrantResults as $quadrantResult) {
-                $cibestForm->cibestQuadrants()->attach($quadrantResult['poverty_standard_id'], [
+                CibestQuadrant::create([
+                    'poverty_id' => $quadrantResult['poverty_standard_id'],
+                    'form_id' => $cibestForm->id,
                     'kuadran_sebelum' => $quadrantResult['kuadran_sebelum'],
                     'kuadran_setelah' => $quadrantResult['kuadran_setelah']
                 ]);
@@ -274,11 +277,13 @@ class CibestFormController extends Controller
                 }
             }
 
-            // Hitung kuadran setelah semua data disimpan dan simpan ke pivot table
+            // Hitung kuadran setelah semua data disimpan dan simpan ke tabel cibest_quadrants
             $quadrantResults = $this->hitungKuadran($cibestForm);
 
             foreach ($quadrantResults as $quadrantResult) {
-                $cibestForm->cibestQuadrants()->attach($quadrantResult['poverty_standard_id'], [
+                CibestQuadrant::create([
+                    'poverty_id' => $quadrantResult['poverty_standard_id'],
+                    'form_id' => $cibestForm->id,
                     'kuadran_sebelum' => $quadrantResult['kuadran_sebelum'],
                     'kuadran_setelah' => $quadrantResult['kuadran_setelah']
                 ]);

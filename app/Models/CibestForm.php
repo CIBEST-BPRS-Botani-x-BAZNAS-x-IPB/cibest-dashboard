@@ -197,6 +197,6 @@ class CibestForm extends Model
 
     public function cibestQuadrants()
     {
-        return $this->belongsToMany(PovertyStandard::class, 'cibest_quadrants', 'form_id', 'poverty_id');
+        return $this->hasMany(CibestQuadrant::class, 'form_id');
     }
 }

@@ -13,50 +13,86 @@ import {
   CartesianGrid,
 } from "recharts"
 import { Button } from "@/components/ui/button"
+import { Select, SelectContent, SelectItem, SelectTrigger } from "@/components/ui/select"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
-import { QUADRANT_COLORS, cibest } from "@/data/cibest-data"
+import { QUADRANT_COLORS } from "@/data/cibest-data"
+import { QuadrantData } from "@/types"
 
-export function QuadrantDistribution() {
-  const [showModal, setShowModal] = useState(false)
+interface QuadrantDistributionProps {
+  quadrantData?: QuadrantData[];
+}
 
-  const pieData = [
-    { name: "Q1 Sejahtera", value: cibest.quadrantDistribution.after.Q1, color: QUADRANT_COLORS.Q1 },
-    { name: "Q2 Material", value: cibest.quadrantDistribution.after.Q2, color: QUADRANT_COLORS.Q2 },
-    { name: "Q3 Spiritual", value: cibest.quadrantDistribution.after.Q3, color: QUADRANT_COLORS.Q3 },
-    { name: "Q4 Absolut", value: cibest.quadrantDistribution.after.Q4, color: QUADRANT_COLORS.Q4 },
-  ]
+export function QuadrantDistribution({ quadrantData }: QuadrantDistributionProps) {
+  const [showModal, setShowModal] = useState(false);
+  const [standard, setStandart] = useState(0);
 
-  const barData = [
+  // Default to empty array if quadrantData is undefined
+  const data = quadrantData || [];
+
+  const currentStandard = data.length > 0 ? data[standard] : null;
+
+  const pieData = currentStandard ? [
+    { name: "Q1 Sejahtera", value: currentStandard.after[1] || 0, color: QUADRANT_COLORS.Q1 },
+    { name: "Q2 Material", value: currentStandard.after[2] || 0, color: QUADRANT_COLORS.Q2 },
+    { name: "Q3 Spiritual", value: currentStandard.after[3] || 0, color: QUADRANT_COLORS.Q3 },
+    { name: "Q4 Absolut", value: currentStandard.after[4] || 0, color: QUADRANT_COLORS.Q4 },
+  ] : [];
+
+  const barData = currentStandard ? [
     {
       name: "Q1",
-      Before: cibest.quadrantDistribution.before.Q1,
-      After: cibest.quadrantDistribution.after.Q1,
+      Before: currentStandard.before[1] || 0,
+      After: currentStandard.after[1] || 0,
     },
     {
       name: "Q2",
-      Before: cibest.quadrantDistribution.before.Q2,
-      After: cibest.quadrantDistribution.after.Q2,
+      Before: currentStandard.before[2] || 0,
+      After: currentStandard.after[2] || 0,
     },
     {
       name: "Q3",
-      Before: cibest.quadrantDistribution.before.Q3,
-      After: cibest.quadrantDistribution.after.Q3,
+      Before: currentStandard.before[3] || 0,
+      After: currentStandard.after[3] || 0,
     },
     {
       name: "Q4",
-      Before: cibest.quadrantDistribution.before.Q4,
-      After: cibest.quadrantDistribution.after.Q4,
+      Before: currentStandard.before[4] || 0,
+      After: currentStandard.after[4] || 0,
     },
-  ]
+  ] : [];
+
+  // Calculate the percentage for each quadrant based on total
+  const calculatePercentage = (quadrantNum: number, period: 'before' | 'after' = 'after'): number => {
+    if (!currentStandard) return 0;
+    const quadrantCount = period === 'after' ? currentStandard.after[quadrantNum] || 0 : currentStandard.before[quadrantNum] || 0;
+    const total = period === 'after'
+      ? Object.values(currentStandard.after).reduce((sum, count) => sum + (count || 0), 0)
+      : Object.values(currentStandard.before).reduce((sum, count) => sum + (count || 0), 0);
+    return total > 0 ? Math.round((quadrantCount / total) * 100) : 0;
+  };
 
   return (
     <>
       <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-xl font-semibold text-gray-800">Distribusi Kuadran</h2>
-          <Button onClick={() => setShowModal(true)} className="bg-teal-500 hover:bg-teal-600 text-white">
-            View More
-          </Button>
+          <div className="flex items-center gap-2">
+            {data && data.length > 0 && (
+              <Select onValueChange={(value) => setStandart(parseInt(value))}>
+                <SelectTrigger>{data[standard].name}</SelectTrigger>
+                <SelectContent>
+                  {data.map((standart, index) => (
+                    <SelectItem value={index.toLocaleString()}>
+                      {standart.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            )}
+            <Button onClick={() => setShowModal(true)} className="bg-teal-500 hover:bg-teal-600 text-white">
+              View More
+            </Button>
+          </div>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -88,23 +124,31 @@ export function QuadrantDistribution() {
             <div className="grid grid-cols-2 gap-4">
               <div className="bg-teal-100 rounded-lg p-4 border-2 border-teal-300">
                 <h3 className="font-semibold text-teal-700 mb-2">Quadrant I</h3>
-                <p className="text-sm text-teal-600">Sejahtera (+,+)</p>
-                <p className="text-2xl font-bold text-teal-700 mt-2">{cibest.quadrantDistribution.after.Q1}%</p>
+                <p className="text-sm text-teal-700">Sejahtera (+,+)</p>
+                <p className="text-2xl font-bold text-teal-700 mt-2">
+                  {currentStandard ? calculatePercentage(1, 'after') + '%' : '0%'}
+                </p>
               </div>
               <div className="bg-pink-100 rounded-lg p-4 border-2 border-pink-300">
                 <h3 className="font-semibold text-pink-700 mb-2">Quadrant II</h3>
-                <p className="text-sm text-pink-600">Material (-,+)</p>
-                <p className="text-2xl font-bold text-pink-700 mt-2">{cibest.quadrantDistribution.after.Q2}%</p>
+                <p className="text-sm text-pink-700">Material (-,+)</p>
+                <p className="text-2xl font-bold text-pink-700 mt-2">
+                  {currentStandard ? calculatePercentage(2, 'after') + '%' : '0%'}
+                </p>
               </div>
               <div className="bg-green-100 rounded-lg p-4 border-2 border-green-300">
                 <h3 className="font-semibold text-green-700 mb-2">Quadrant III</h3>
-                <p className="text-sm text-green-600">Spiritual (-,-)</p>
-                <p className="text-2xl font-bold text-green-700 mt-2">{cibest.quadrantDistribution.after.Q3}%</p>
+                <p className="text-sm text-green-700">Spiritual (-,-)</p>
+                <p className="text-2xl font-bold text-green-700 mt-2">
+                  {currentStandard ? calculatePercentage(3, 'after') + '%' : '0%'}
+                </p>
               </div>
               <div className="bg-orange-100 rounded-lg p-4 border-2 border-orange-300">
                 <h3 className="font-semibold text-orange-700 mb-2">Quadrant IV</h3>
-                <p className="text-sm text-orange-600">Absolut (+,-)</p>
-                <p className="text-2xl font-bold text-orange-700 mt-2">{cibest.quadrantDistribution.after.Q4}%</p>
+                <p className="text-sm text-orange-700">Absolut (+,-)</p>
+                <p className="text-2xl font-bold text-orange-700 mt-2">
+                  {currentStandard ? calculatePercentage(4, 'after') + '%' : '0%'}
+                </p>
               </div>
             </div>
           </div>
