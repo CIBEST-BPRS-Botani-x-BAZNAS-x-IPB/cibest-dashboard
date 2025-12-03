@@ -234,7 +234,7 @@ class BaznasImport extends BaseImport
                 'nama_responden'    => $row[6],
                 'nomor_kontak'      => $row[10] ?? null,
                 'alamat'            => $row[22],
-                'province_id'       => $this->getOptionId(Province::class, Str::headline($row[24]), 24),
+                'province_id'       => $this->getOptionId(Province::class, Str::title($row[24]), 24),
                 'kabupaten_kota'    => $row[25],
                 'kecamatan'         => $row[26],
                 'desa_kelurahan'    => $row[27],

@@ -16,6 +16,8 @@ class CibestQuadrant extends Model
         'kuadran_setelah'
     ];
 
+    public $timestamps = false;
+
     public function povertyStandard()
     {
         return $this->belongsTo(PovertyStandard::class, 'poverty_id');

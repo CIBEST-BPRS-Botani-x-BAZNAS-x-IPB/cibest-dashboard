@@ -323,7 +323,7 @@ class CibestImport extends BaseImport
                 'nama_responden'    => $row[4],
                 'nomor_kontak'      => $row[5] ?? null,
                 'alamat'            => $row[6],
-                'province_id'       => $this->getOptionId(Province::class, Str::headline($row[7]), 7),
+                'province_id'       => $this->getOptionId(Province::class, Str::title($row[7]), 7),
                 'kabupaten_kota'    => $row[8],
                 'kecamatan'         => $row[9],
                 'desa_kelurahan'    => $row[10],
