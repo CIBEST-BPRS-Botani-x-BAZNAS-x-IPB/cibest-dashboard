@@ -5,7 +5,7 @@ import { StandardTables } from "@/components/standard-tables"
 import { IndicatorsTable } from "@/components/indicators-table"
 import { DashboardFooter } from "@/components/dashboard-footer"
 import { Link, usePage } from "@inertiajs/react"
-import { QuadrantData, SharedData, PovertyStandard } from "@/types"
+import { QuadrantData, SharedData, PovertyStandard, AllProvincesByStandard, PovertyIndicator, Province } from "@/types"
 import { dashboard, login, register } from "@/routes"
 
 export default function Welcome({
@@ -14,7 +14,8 @@ export default function Welcome({
   quadrantDistribution,
   povertyStandards,
   povertyIndicators,
-  provinces
+  provinces,
+  allProvincesByStandard
 }: {
   canRegister?: boolean;
   respondentCount: number;
@@ -22,6 +23,7 @@ export default function Welcome({
   povertyStandards: PovertyStandard[];
   povertyIndicators: PovertyIndicator[];
   provinces: Province[];
+  allProvincesByStandard: AllProvincesByStandard;
 }) {
   const { auth } = usePage<SharedData>().props;
 
@@ -77,7 +79,11 @@ export default function Welcome({
         <QuadrantDistribution quadrantData={quadrantDistribution} />
         <IndonesiaMap />
         <div className="mt-6">
-          <ProvinceTable provinces={provinces} />
+          <ProvinceTable
+            provinces={provinces}
+            povertyStandards={povertyStandards}
+            allProvincesByStandard={allProvincesByStandard}
+          />
         </div>
         <StandardTables povertyStandards={povertyStandards} />
         <IndicatorsTable povertyIndicators={povertyIndicators} />

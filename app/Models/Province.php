@@ -9,8 +9,13 @@ class Province extends Model
 {
     /** @use HasFactory<\Database\Factories\ProvinceFactory> */
     use HasFactory;
-    
+
     public $timestamps = false;
 
     protected $fillable = ['value'];
+
+    public function cibestForms()
+    {
+        return $this->hasMany(CibestForm::class, 'province_id');
+    }
 }

@@ -5,7 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\CibestForm;
 use App\Models\CibestQuadrant;
 use App\Models\PovertyStandard;
+use App\Models\Province;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 use Laravel\Fortify\Features;
 
@@ -127,46 +129,52 @@ class DashboardController extends Controller
             ]
         ];
 
-        // Hardcoded province data (this would typically come from a database table)
-        $provinces = [
-            ['name' => 'DK Jawa', 'Q1' => 25, 'Q2' => 27, 'Q3' => 23, 'Q4' => 25, 'total' => 100, 'dominant' => 'Q2'],
-            ['name' => 'Jawa Barat', 'Q1' => 22, 'Q2' => 30, 'Q3' => 25, 'Q4' => 23, 'total' => 100, 'dominant' => 'Q2'],
-            ['name' => 'Jawa Tengah', 'Q1' => 24, 'Q2' => 35, 'Q3' => 23, 'Q4' => 18, 'total' => 100, 'dominant' => 'Q2'],
-            ['name' => 'DIY', 'Q1' => 25, 'Q2' => 28, 'Q3' => 24, 'Q4' => 23, 'total' => 100, 'dominant' => 'Q2'],
-            ['name' => 'Jawa Timur', 'Q1' => 28, 'Q2' => 32, 'Q3' => 22, 'Q4' => 18, 'total' => 100, 'dominant' => 'Q2'],
-            ['name' => 'Banten', 'Q1' => 20, 'Q2' => 38, 'Q3' => 20, 'Q4' => 22, 'total' => 100, 'dominant' => 'Q2'],
-            ['name' => 'Sumatera Utara', 'Q1' => 30, 'Q2' => 25, 'Q3' => 23, 'Q4' => 22, 'total' => 100, 'dominant' => 'Q1'],
-            ['name' => 'Sumatera Barat', 'Q1' => 32, 'Q2' => 22, 'Q3' => 25, 'Q4' => 21, 'total' => 100, 'dominant' => 'Q1'],
-            ['name' => 'Riau', 'Q1' => 28, 'Q2' => 26, 'Q3' => 24, 'Q4' => 22, 'total' => 100, 'dominant' => 'Q1'],
-            ['name' => 'Jambi', 'Q1' => 26, 'Q2' => 28, 'Q3' => 23, 'Q4' => 23, 'total' => 100, 'dominant' => 'Q2'],
-            ['name' => 'Sumatera Selatan', 'Q1' => 24, 'Q2' => 30, 'Q3' => 24, 'Q4' => 22, 'total' => 100, 'dominant' => 'Q2'],
-            ['name' => 'Bengkulu', 'Q1' => 25, 'Q2' => 29, 'Q3' => 23, 'Q4' => 23, 'total' => 100, 'dominant' => 'Q2'],
-            ['name' => 'Aceh', 'Q1' => 30, 'Q2' => 22, 'Q3' => 25, 'Q4' => 23, 'total' => 100, 'dominant' => 'Q1'],
-            ['name' => 'Kepulauan Riau', 'Q1' => 22, 'Q2' => 26, 'Q3' => 24, 'Q4' => 28, 'total' => 100, 'dominant' => 'Q4'],
-            ['name' => 'Lampung', 'Q1' => 23, 'Q2' => 27, 'Q3' => 24, 'Q4' => 26, 'total' => 100, 'dominant' => 'Q2'],
-            ['name' => 'Kepulauan Bangka Belitung', 'Q1' => 21, 'Q2' => 26, 'Q3' => 24, 'Q4' => 30, 'total' => 100, 'dominant' => 'Q4'],
-            ['name' => 'Jakarta', 'Q1' => 27, 'Q2' => 25, 'Q3' => 23, 'Q4' => 25, 'total' => 100, 'dominant' => 'Q2'],
-            ['name' => 'Sulawesi Utara', 'Q1' => 20, 'Q2' => 28, 'Q3' => 24, 'Q4' => 28, 'total' => 100, 'dominant' => 'Q4'],
-            ['name' => 'Gorontalo', 'Q1' => 18, 'Q2' => 26, 'Q3' => 24, 'Q4' => 23, 'total' => 100, 'dominant' => 'Q2'],
-            ['name' => 'Sulawesi Tengah', 'Q1' => 19, 'Q2' => 25, 'Q3' => 23, 'Q4' => 24, 'total' => 100, 'dominant' => 'Q2'],
-            ['name' => 'Sulawesi Barat', 'Q1' => 17, 'Q2' => 24, 'Q3' => 23, 'Q4' => 36, 'total' => 100, 'dominant' => 'Q4'],
-            ['name' => 'Sulawesi Selatan', 'Q1' => 21, 'Q2' => 26, 'Q3' => 24, 'Q4' => 29, 'total' => 100, 'dominant' => 'Q2'],
-            ['name' => 'Sulawesi Tenggara', 'Q1' => 16, 'Q2' => 28, 'Q3' => 24, 'Q4' => 22, 'total' => 100, 'dominant' => 'Q2'],
-            ['name' => 'Kalimantan Barat', 'Q1' => 15, 'Q2' => 26, 'Q3' => 24, 'Q4' => 30, 'total' => 100, 'dominant' => 'Q4'],
-            ['name' => 'Kalimantan Tengah', 'Q1' => 14, 'Q2' => 28, 'Q3' => 24, 'Q4' => 24, 'total' => 100, 'dominant' => 'Q2'],
-            ['name' => 'Kalimantan Selatan', 'Q1' => 13, 'Q2' => 27, 'Q3' => 24, 'Q4' => 26, 'total' => 100, 'dominant' => 'Q2'],
-            ['name' => 'Kalimantan Timur', 'Q1' => 16, 'Q2' => 25, 'Q3' => 23, 'Q4' => 26, 'total' => 100, 'dominant' => 'Q2'],
-            ['name' => 'Kalimantan Utara', 'Q1' => 12, 'Q2' => 28, 'Q3' => 24, 'Q4' => 26, 'total' => 100, 'dominant' => 'Q2'],
-            ['name' => 'Papua', 'Q1' => 10, 'Q2' => 28, 'Q3' => 24, 'Q4' => 26, 'total' => 100, 'dominant' => 'Q2'],
-            ['name' => 'Papua Barat', 'Q1' => 11, 'Q2' => 26, 'Q3' => 24, 'Q4' => 28, 'total' => 100, 'dominant' => 'Q4'],
-            ['name' => 'Papua Selatan', 'Q1' => 9, 'Q2' => 27, 'Q3' => 24, 'Q4' => 26, 'total' => 100, 'dominant' => 'Q2'],
-            ['name' => 'Papua Tengah', 'Q1' => 8, 'Q2' => 26, 'Q3' => 24, 'Q4' => 26, 'total' => 100, 'dominant' => 'Q2'],
-            ['name' => 'Papua Pegunungan', 'Q1' => 7, 'Q2' => 26, 'Q3' => 24, 'Q4' => 26, 'total' => 100, 'dominant' => 'Q2'],
-            ['name' => 'Maluku', 'Q1' => 12, 'Q2' => 28, 'Q3' => 24, 'Q4' => 26, 'total' => 100, 'dominant' => 'Q2'],
-            ['name' => 'Maluku Utara', 'Q1' => 10, 'Q2' => 26, 'Q3' => 24, 'Q4' => 26, 'total' => 100, 'dominant' => 'Q2'],
-            ['name' => 'Nusa Tenggara Timur', 'Q1' => 11, 'Q2' => 26, 'Q3' => 24, 'Q4' => 28, 'total' => 100, 'dominant' => 'Q4'],
-            ['name' => 'Nusa Tenggara Barat', 'Q1' => 13, 'Q2' => 27, 'Q3' => 24, 'Q4' => 26, 'total' => 100, 'dominant' => 'Q2'],
-        ];
+        // Get province data with quadrant distribution for ALL poverty standards
+        $allProvincesData = [];
+
+        foreach ($povertyStandards as $standard) {
+            // Get province data with quadrant distribution for the current poverty standard
+            $provincesForStandard = DB::select("
+                SELECT
+                    p.id,
+                    p.value as name,
+                    COUNT(cf.id) as total,
+                    COALESCE(SUM(CASE WHEN cq.kuadran_setelah = 1 THEN 1 ELSE 0 END), 0) as Q1,
+                    COALESCE(SUM(CASE WHEN cq.kuadran_setelah = 2 THEN 1 ELSE 0 END), 0) as Q2,
+                    COALESCE(SUM(CASE WHEN cq.kuadran_setelah = 3 THEN 1 ELSE 0 END), 0) as Q3,
+                    COALESCE(SUM(CASE WHEN cq.kuadran_setelah = 4 THEN 1 ELSE 0 END), 0) as Q4
+                FROM provinces p
+                LEFT JOIN cibest_forms cf ON p.id = cf.province_id
+                LEFT JOIN cibest_quadrants cq ON cf.id = cq.form_id AND cq.poverty_id = ?
+                GROUP BY p.id, p.value
+                ORDER BY p.value
+            ", [$standard->id]);
+
+            // Convert to array format and determine dominant quadrant
+            $provincesForStandard = array_map(function($province) use ($standard) {
+                $maxQ = max($province->Q1, $province->Q2, $province->Q3, $province->Q4);
+                $dominant = 'Q1';
+                if ($province->Q2 == $maxQ) $dominant = 'Q2';
+                if ($province->Q3 == $maxQ) $dominant = 'Q3';
+                if ($province->Q4 == $maxQ) $dominant = 'Q4';
+
+                return [
+                    'id' => $province->id,
+                    'name' => $province->name,
+                    'Q1' => $province->Q1,
+                    'Q2' => $province->Q2,
+                    'Q3' => $province->Q3,
+                    'Q4' => $province->Q4,
+                    'total' => $province->total,
+                    'dominant' => $dominant,
+                    'poverty_standard_id' => $standard->id
+                ];
+            }, $provincesForStandard);
+
+            usort($provincesForStandard, fn($a, $b) => $a['id'] <=> $b['id']);
+
+            $allProvincesData[] = $provincesForStandard;
+        }        
 
         return Inertia::render('welcome', [
             'canRegister' => Features::enabled(Features::registration()),
@@ -174,7 +182,7 @@ class DashboardController extends Controller
             'quadrantDistribution' => $quadrantDistribution,
             'povertyStandards' => $formattedStandards,
             'povertyIndicators' => $povertyIndicators,
-            'provinces' => $provinces
+            'allProvincesByStandard' => $allProvincesData,
         ]);
     }
 }

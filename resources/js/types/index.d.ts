@@ -81,3 +81,7 @@ export interface Province {
   total: number;
   dominant: string;
 }
+
+export interface AllProvincesByStandard {
+  [key: number]: Province[];
+}
