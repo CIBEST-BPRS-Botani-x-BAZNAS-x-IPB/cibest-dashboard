@@ -17,7 +17,8 @@ class UserSeeder extends Seeder
         User::factory()->makeAdmin()->create([
             'email' => env('ADMIN_EMAIL'),
             'password' => Hash::make(env('ADMIN_PASSWORD')),
-            'name' => 'Super Admin'
+            'name' => 'Super Admin',
+            'admin_verification_status' => 'verified',
         ]);
     }
 }

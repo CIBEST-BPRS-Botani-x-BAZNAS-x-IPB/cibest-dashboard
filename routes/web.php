@@ -1,14 +1,19 @@
 <?php
 
+use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\CibestFormController;
 use App\Http\Controllers\DashboardController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
-use Laravel\Fortify\Features;
 
 Route::get('/', [DashboardController::class, 'index'])->name('home');
 
-Route::middleware(['auth', 'verified'])->group(function () {
+// Pending verification page
+Route::get('/verification/pending', function () {
+    return Inertia::render('verification/pending');
+})->middleware('auth')->name('verification.pending');
+
+Route::middleware(['auth', 'verified', 'admin.verified'])->group(function () {
     Route::get('dashboard', function () {
         return Inertia::render('dashboard');
     })->name('dashboard');
@@ -25,8 +30,15 @@ Route::middleware(['auth', 'verified'])->group(function () {
         });
     });
 
-    
-
+    // Admin routes - requires admin role
+    Route::middleware('admin.role')->prefix('admin')->name('admin.')->group(function () {
+        Route::controller(UserController::class)->prefix('users')->name('users.')->group(function () {
+            Route::get('/', 'index')->name('index');
+            Route::get('/{user}', 'show')->name('show');
+            Route::post('/{user}/approve', 'approve')->name('approve');
+            Route::post('/{user}/reject', 'reject')->name('reject');
+        });
+    });
 });
 
 require __DIR__.'/settings.php';

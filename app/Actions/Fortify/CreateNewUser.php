@@ -34,6 +34,7 @@ class CreateNewUser implements CreatesNewUsers
             'name' => $input['name'],
             'email' => $input['email'],
             'password' => $input['password'],
+            'admin_verification_status' => 'pending', // Set to pending by default
         ]);
     }
 }
