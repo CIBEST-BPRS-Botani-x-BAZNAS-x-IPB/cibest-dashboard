@@ -342,14 +342,12 @@ class BaznasImport extends BaseImport
                 'kebijakan_pemerintah_setelah' => $this->getLikertId(KeteranganKebijakanPemerintahLikert::class, $row[49], 49),
 
                 // --- Pembinaan & Pendampingan ---
-                'pembinaan_pendampingan_section' => ($row[37] === 'Ya') || ($row[38] === 'Ya') || ($row[39] === 'Ya') ? 
-                    [
-                        'frekuensi_id' => $this->getOptionId(FrekuensiPendampinganOption::class, '1-2 kali', 37),
-                        'pembinaan_spiritual' => ($row[37] ?? null) === "Ya",
-                        'pembinaan_usaha' => ($row[38] ?? null) === "Ya",
-                        'pendampingan_rutin' => ($row[39] ?? null) === "Ya",
-                    ]
-                    : null,
+                'pembinaan_pendampingan_section' => [
+                    'frekuensi_id' => null,
+                    'pembinaan_spiritual' => ($row[37] ?? null) === "Ya",
+                    'pembinaan_usaha' => ($row[38] ?? null) === "Ya",
+                    'pendampingan_rutin' => ($row[39] ?? null) === "Ya",
+                ],
             ];
         }
     }
@@ -379,7 +377,7 @@ class BaznasImport extends BaseImport
             '33' => 'nullable|integer|min:0',
 
             // --- Bantuan ZISWAF ---
-            '34' => 'nullable|date',
+            '34' => 'sometimes|nullable|date',
             '3'  => 'required_with:34|nullable|in:baz,laz',
             '30' => 'required_with:34|nullable|string',
             '35' => 'required_with:34|nullable|integer|min:0',
@@ -420,9 +418,9 @@ class BaznasImport extends BaseImport
             '49' => 'required|exists:keterangan_kebijakan_pemerintah_likerts,description',
 
             // --- Pembinaan & Pendampingan ---
-            '37' => 'required|in:Ya,Tidak',
-            '38' => 'required|in:Ya,Tidak',
-            '39' => 'required|in:Ya,Tidak',
+            '37' => 'nullable|in:Ya,Tidak',
+            '38' => 'nullable|in:Ya,Tidak',
+            '39' => 'nullable|in:Ya,Tidak',
         ];
     }
 }

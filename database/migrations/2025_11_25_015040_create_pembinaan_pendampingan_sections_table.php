@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->timestamps();
             
-            $table->foreignId('frekuensi_id')->constrained('frekuensi_pendampingan_options');
+            $table->foreignId('frekuensi_id')->nullable()->constrained('frekuensi_pendampingan_options');
             $table->boolean('pembinaan_spiritual');
             $table->boolean('pembinaan_usaha');
             $table->boolean('pendampingan_rutin');

@@ -298,7 +298,7 @@ class CibestImport extends BaseImport
             $data[] = [
                 'nama_anggota' => $row[$base],
                 'status_id' => $this->getOptionId(StatusPekerjaanOption::class, $row[$base + 1], $base + 1),
-                'jenis_id' => $this->getOptionId(JenisPekerjaanOption::class, $row[$base + 2], $base + 2, true),
+                'jenis_id' => $this->getOptionId(JenisPekerjaanOption::class, $row[$base + 2] ?? 'Tidak disebutkan', $base + 2, true),
                 'rata_rata_pendapatan' => $row[$base + 3] ?? 0,
                 'pendapatan_tidak_tetap' => $row[$base + 4] ?? 0,
                 'pendapatan_aset' => $row[$base + 5] ?? 0,
@@ -312,6 +312,7 @@ class CibestImport extends BaseImport
 
     public function collection(Collection $rows)
     {
+        // dd($rows->count());
         foreach ($rows as $row)
         {
             $this->data[] = [
@@ -424,17 +425,14 @@ class CibestImport extends BaseImport
                 'kebijakan_pemerintah_setelah' => $this->getOptionId(KeteranganKebijakanPemerintahLikert::class, $row[203], 203),
 
                 // --- Pembinaan & Pendampingan ---
-                'pembinaan_pendampingan_section' => $row[204] === 'Ya' ? 
-                    [
-                        'frekuensi_id' => $this->getOptionId(FrekuensiPendampinganOption::class, $row[205], 205),
-                        'jenis_pelatihan_checkbox' => $this->getCheckboxId(JenisPelatihanCheckbox::class, $row[206]),
-                        'pelatihan_sangat_membantu_checkbox' => $this->getCheckboxId(JenisPelatihanCheckbox::class, $row[207]),
-                        'pembinaan_spiritual' => ($row[208] ?? null) === "Ya",
-                        'pembinaan_usaha' => ($row[209] ?? null) === "Ya",
-                        'pendampingan_rutin' => ($row[210] ?? null) === "Ya",
-                    ]
-                    : null,
-                // 'pembinaan_pendampingan_section_id' => $row['1.  Apakah Anda pernah mendapatkan pendampingan, pelatihan, atau bimbingan selama menerima bantuan?'] ?? null,
+                'pembinaan_pendampingan_section' => [
+                    'frekuensi_id' => $this->getOptionId(FrekuensiPendampinganOption::class, $row[205], 205),
+                    'jenis_pelatihan_checkbox' => $this->getCheckboxId(JenisPelatihanCheckbox::class, $row[206]),
+                    'pelatihan_sangat_membantu_checkbox' => $this->getCheckboxId(JenisPelatihanCheckbox::class, $row[207]),
+                    'pembinaan_spiritual' => ($row[208] ?? null) === "Ya",
+                    'pembinaan_usaha' => ($row[209] ?? null) === "Ya",
+                    'pendampingan_rutin' => ($row[210] ?? null) === "Ya",
+                ],
             ];
         }
     }
@@ -507,7 +505,7 @@ class CibestImport extends BaseImport
             '50' => 'required|exists:pendidikan_formal_options,value',
             '51' => 'required|exists:pendidikan_nonformal_options,value',
             // Anggota 2
-            '52' => 'nullable|string',
+            '52' => 'sometimes|nullable|string',
             '53' => 'required_with:52|nullable|string',
             '54' => 'required_with:52|nullable|integer|min:0',
             '55' => 'required_with:52|nullable|exists:jenis_kelamin_options,value',
@@ -515,7 +513,7 @@ class CibestImport extends BaseImport
             '57' => 'required_with:52|nullable|exists:pendidikan_formal_options,value',
             '58' => 'required_with:52|nullable|exists:pendidikan_nonformal_options,value',
             // Anggota 3
-            '59' => 'nullable|string',
+            '59' => 'sometimes|nullable|string',
             '60' => 'required_with:59|nullable|string',
             '61' => 'required_with:59|nullable|integer|min:0',
             '62' => 'required_with:59|nullable|exists:jenis_kelamin_options,value',
@@ -523,7 +521,7 @@ class CibestImport extends BaseImport
             '64' => 'required_with:59|nullable|exists:pendidikan_formal_options,value',
             '65' => 'required_with:59|nullable|exists:pendidikan_nonformal_options,value',
             // Anggota 4
-            '66' => 'nullable|string',
+            '66' => 'sometimes|nullable|string',
             '67' => 'required_with:66|nullable|string',
             '68' => 'required_with:66|nullable|integer|min:0',
             '69' => 'required_with:66|nullable|exists:jenis_kelamin_options,value',
@@ -531,7 +529,7 @@ class CibestImport extends BaseImport
             '71' => 'required_with:66|nullable|exists:pendidikan_formal_options,value',
             '72' => 'required_with:66|nullable|exists:pendidikan_nonformal_options,value',
             // Anggota 5
-            '73' => 'nullable|string',
+            '73' => 'sometimes|nullable|string',
             '74' => 'required_with:73|nullable|string',
             '75' => 'required_with:73|nullable|integer|min:0',
             '76' => 'required_with:73|nullable|exists:jenis_kelamin_options,value',
@@ -539,7 +537,7 @@ class CibestImport extends BaseImport
             '78' => 'required_with:73|nullable|exists:pendidikan_formal_options,value',
             '79' => 'required_with:73|nullable|exists:pendidikan_nonformal_options,value',
             // Anggota 6
-            '80' => 'nullable|string',
+            '80' => 'sometimes|nullable|string',
             '81' => 'required_with:80|nullable|string',
             '82' => 'required_with:80|nullable|integer|min:0',
             '83' => 'required_with:80|nullable|exists:jenis_kelamin_options,value',
@@ -547,7 +545,7 @@ class CibestImport extends BaseImport
             '85' => 'required_with:80|nullable|exists:pendidikan_formal_options,value',
             '86' => 'required_with:80|nullable|exists:pendidikan_nonformal_options,value',
             // Anggota 7
-            '87' => 'nullable|string',
+            '87' => 'sometimes|nullable|string',
             '88' => 'required_with:87|nullable|string',
             '89' => 'required_with:87|nullable|integer|min:0',
             '90' => 'required_with:87|nullable|exists:jenis_kelamin_options,value',
@@ -555,7 +553,7 @@ class CibestImport extends BaseImport
             '92' => 'required_with:87|nullable|exists:pendidikan_formal_options,value',
             '93' => 'required_with:87|nullable|exists:pendidikan_nonformal_options,value',
             // Anggota 8
-            '94' => 'nullable|string',
+            '94' => 'sometimes|nullable|string',
             '95' => 'required_with:94|nullable|string',
             '96' => 'required_with:94|nullable|integer|min:0',
             '97' => 'required_with:94|nullable|exists:jenis_kelamin_options,value',
@@ -563,7 +561,7 @@ class CibestImport extends BaseImport
             '99' => 'required_with:94|nullable|exists:pendidikan_formal_options,value',
             '100'=> 'required_with:94|nullable|exists:pendidikan_nonformal_options,value',
             // Anggota 9
-            '101' => 'nullable|string',
+            '101' => 'sometimes|nullable|string',
             '102' => 'required_with:101|nullable|string',
             '103' => 'required_with:101|nullable|integer|min:0',
             '104' => 'required_with:101|nullable|exists:jenis_kelamin_options,value',
@@ -581,65 +579,65 @@ class CibestImport extends BaseImport
             '113' => 'nullable|integer|min:0',
             '114' => 'nullable|integer|min:0',
             // Anggota 2
-            '115' => 'nullable|string',
-            '116' => 'required_with:115|exists:status_pekerjaan_options,value',
-            '117' => 'required_with:115|string',
+            '115' => 'sometimes|nullable|string',
+            '116' => 'required_with:115|nullable|exists:status_pekerjaan_options,value',
+            '117' => 'required_with:115|nullable|string',
             '118' => 'nullable|integer|min:0',
             '119' => 'nullable|integer|min:0',
             '120' => 'nullable|integer|min:0',
             '121' => 'nullable|integer|min:0',
             // Anggota 3
-            '122' => 'nullable|string',
-            '123' => 'required_with:122|exists:status_pekerjaan_options,value',
-            '124' => 'required_with:122|string',
+            '122' => 'sometimes|nullable|string',
+            '123' => 'required_with:122|nullable|exists:status_pekerjaan_options,value',
+            '124' => 'required_with:122|nullable|string',
             '125' => 'nullable|integer|min:0',
             '126' => 'nullable|integer|min:0',
             '127' => 'nullable|integer|min:0',
             '128' => 'nullable|integer|min:0',
             // Anggota 4
-            '129' => 'nullable|string',
-            '130' => 'required_with:129|exists:status_pekerjaan_options,value',
-            '131' => 'required_with:129|string',
+            '129' => 'sometimes|nullable|string',
+            '130' => 'required_with:129|nullable|exists:status_pekerjaan_options,value',
+            '131' => 'required_with:129|nullable|string',
             '132' => 'nullable|integer|min:0',
             '133' => 'nullable|integer|min:0',
             '134' => 'nullable|integer|min:0',
             '135' => 'nullable|integer|min:0',
             // Anggota 5
-            '136' => 'nullable|string',
-            '137' => 'required_with:136|exists:status_pekerjaan_options,value',
-            '138' => 'required_with:136|string',
+            '136' => 'sometimes|nullable|string',
+            '137' => 'required_with:136|nullable|exists:status_pekerjaan_options,value',
+            '138' => 'required_with:136|nullable|string',
             '139' => 'nullable|integer|min:0',
             '140' => 'nullable|integer|min:0',
             '141' => 'nullable|integer|min:0',
             '142' => 'nullable|integer|min:0',
             // Anggota 6
-            '143' => 'nullable|string',
-            '144' => 'required_with:143|exists:status_pekerjaan_options,value',
-            '145' => 'required_with:143|string',
+            '143' => 'sometimes|nullable|string',
+            '144' => 'required_with:143|nullable|exists:status_pekerjaan_options,value',
+            '145' => 'required_with:143|nullable|string',
             '146' => 'nullable|integer|min:0',
             '147' => 'nullable|integer|min:0',
             '148' => 'nullable|integer|min:0',
             '149' => 'nullable|integer|min:0',
             // Anggota 7
-            '150' => 'nullable|string',
-            '151' => 'required_with:150|exists:status_pekerjaan_options,value',
-            '152' => 'required_with:150|string',
+            '150' => 'sometimes|nullable|string',
+            '151' => 'required_with:150|nullable|exists:status_pekerjaan_options,value',
+            '152' => 'required_with:150|nullable|string',
             '153' => 'nullable|integer|min:0',
             '154' => 'nullable|integer|min:0',
             '155' => 'nullable|integer|min:0',
             '156' => 'nullable|integer|min:0',
             // Anggota 8
-            '157' => 'nullable|string',
-            '158' => 'required_with:157|exists:status_pekerjaan_options,value',
-            '159' => 'required_with:157|string',
+            '157' => 'sometimes|nullable|string',
+            '158' => 'required_with:157|nullable|exists:status_pekerjaan_options,value',
+            '159' => 'required_with:157|nullable|string',
             '160' => 'nullable|integer|min:0',
             '161' => 'nullable|integer|min:0',
             '162' => 'nullable|integer|min:0',
             '163' => 'nullable|integer|min:0',
             // Anggota 9
-            '164' => 'nullable|string',
-            '165' => 'required_with:164|exists:status_pekerjaan_options,value',
-            '166' => 'required_with:164|string',
+            '164' => 'sometimes|nullable|string',
+            '165' => 'required_with:164|nullable|exists:status_pekerjaan_options,value',
+            '166' => 'required_with:164|nullable|string',
             '167' => 'nullable|integer|min:0',
             '168' => 'nullable|integer|min:0',
             '169' => 'nullable|integer|min:0',
@@ -691,9 +689,9 @@ class CibestImport extends BaseImport
             '205' => 'required_if:204,Ya|nullable|exists:frekuensi_pendampingan_options,value',
             '206' => 'required_if:204,Ya|nullable|string',
             '207' => 'required_if:204,Ya|nullable|string',
-            '208' => 'required_if:204,Ya|nullable|in:Ya,Tidak',
-            '209' => 'required_if:204,Ya|nullable|in:Ya,Tidak',
-            '210' => 'required_if:204,Ya|nullable|in:Ya,Tidak',
+            '208' => 'nullable|in:Ya,Tidak',
+            '209' => 'nullable|in:Ya,Tidak',
+            '210' => 'nullable|in:Ya,Tidak',
         ];
     }
 }

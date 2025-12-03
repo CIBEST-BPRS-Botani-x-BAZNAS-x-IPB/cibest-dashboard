@@ -9,7 +9,7 @@ import {
     SidebarMenuButton,
     SidebarMenuItem,
 } from '@/components/ui/sidebar';
-import { baznas, cibest, dashboard } from '@/routes';
+import { baznas, cibest, dashboard, home } from '@/routes';
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/react';
 import { HandCoins, HandHeart, LayoutGrid } from 'lucide-react';
@@ -40,7 +40,7 @@ export function AppSidebar() {
                 <SidebarMenu>
                     <SidebarMenuItem>
                         <SidebarMenuButton className='h-35' asChild>
-                            <Link href={dashboard()} prefetch>
+                            <Link href={home().url} prefetch>
                                 <AppLogo />
                             </Link>
                         </SidebarMenuButton>
