@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Enums\UserRole;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -22,7 +23,7 @@ class CheckAdminRole
 
         $user = Auth::user();
 
-        if ($user->user_role !== 'admin') {
+        if ($user->user_role !== UserRole::Admin->value) {
             abort(403, 'You do not have permission to access this resource.');
         }
 

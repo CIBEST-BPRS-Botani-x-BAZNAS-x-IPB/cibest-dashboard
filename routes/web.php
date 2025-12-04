@@ -19,7 +19,7 @@ Route::middleware(['auth', 'verified', 'admin.verified'])->group(function () {
     })->name('dashboard');
 
     Route::controller(CibestFormController::class)->group(function () {
-        Route::prefix('cibest')->group(function () {
+        Route::prefix('bprs')->group(function () {
             Route::get('/', 'cibestIndex')->name('cibest');
             Route::post('upload', 'uploadCibest')->name('cibest-upload');
         });

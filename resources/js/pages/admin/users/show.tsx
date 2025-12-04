@@ -1,6 +1,5 @@
-import React from 'react';
-import { Head, Link } from '@inertiajs/react';
-import { PageProps } from '@/types';
+import { Head, Link, usePage } from '@inertiajs/react';
+import { SharedData } from '@/types';
 
 interface User {
     id: number;
@@ -14,13 +13,14 @@ interface User {
     updated_at: string;
 }
 
-interface Props extends PageProps {
+interface Props {
     user: User;
 }
 
 export default function ViewUser({ user }: Props) {
     // Check if user has admin role (this would be passed from backend)
-    const currentUserRole = (window as any).userRole || 'enumerator';
+    const { auth } = usePage<SharedData>().props;
+    const currentUserRole = auth.user.user_role;
 
     if (currentUserRole !== 'admin') {
         return (

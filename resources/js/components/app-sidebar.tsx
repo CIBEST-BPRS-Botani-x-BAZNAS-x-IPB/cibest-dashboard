@@ -22,7 +22,7 @@ const mainNavItems: NavItem[] = [
         icon: LayoutGrid,
     },
     {
-        title: 'CIBEST',
+        title: 'BPRS',
         href: cibest.url(),
         icon: HandHeart,
     },

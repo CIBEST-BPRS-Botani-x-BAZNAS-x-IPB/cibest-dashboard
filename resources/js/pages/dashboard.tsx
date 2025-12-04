@@ -23,7 +23,7 @@ export default function Dashboard() {
                 <div className="flex flex-row gap-4">
                     <Link href={cibest.url()} className='w-fit h-fit'>
                         <Button className='w-fit h-fit flex-col justify-center items-center' variant={'outline'}>
-                            <HandHeart /> Survei CIBEST
+                            <HandHeart /> Survei BPRS
                         </Button>
                     </Link>
                     <Link href={baznas.url()} className='w-fit h-fit'>

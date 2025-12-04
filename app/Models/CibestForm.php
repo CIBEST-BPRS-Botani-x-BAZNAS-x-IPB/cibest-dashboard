@@ -14,6 +14,7 @@ class CibestForm extends Model
         'user_id',
         'nama_enumerator',
         'waktu_pengambilan_data',
+        'type',
 
         // KARAKTERISTIK RESPONDEN
         'nama_responden',

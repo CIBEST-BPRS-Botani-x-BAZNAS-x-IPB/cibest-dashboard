@@ -3,6 +3,8 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+
+use App\Enums\VerificationStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -68,7 +70,7 @@ class User extends Authenticatable
      */
     public function scopePendingVerification($query)
     {
-        return $query->where('admin_verification_status', 'pending');
+        return $query->where('admin_verification_status', VerificationStatus::Pending->value);
     }
 
     /**
@@ -76,7 +78,7 @@ class User extends Authenticatable
      */
     public function scopeVerified($query)
     {
-        return $query->where('admin_verification_status', 'verified');
+        return $query->where('admin_verification_status', VerificationStatus::Verified->value);
     }
 
     /**
@@ -84,7 +86,7 @@ class User extends Authenticatable
      */
     public function scopeRejected($query)
     {
-        return $query->where('admin_verification_status', 'rejected');
+        return $query->where('admin_verification_status', VerificationStatus::Rejected->value);
     }
 
     /**
@@ -92,7 +94,7 @@ class User extends Authenticatable
      */
     public function isPendingVerification(): bool
     {
-        return $this->admin_verification_status === 'pending';
+        return $this->admin_verification_status === VerificationStatus::Pending->value;
     }
 
     /**
@@ -100,7 +102,7 @@ class User extends Authenticatable
      */
     public function isAdminVerified(): bool
     {
-        return $this->admin_verification_status === 'verified';
+        return $this->admin_verification_status === VerificationStatus::Verified->value;
     }
 
     /**
@@ -108,6 +110,6 @@ class User extends Authenticatable
      */
     public function isRejected(): bool
     {
-        return $this->admin_verification_status === 'rejected';
+        return $this->admin_verification_status === VerificationStatus::Rejected->value;
     }
 }

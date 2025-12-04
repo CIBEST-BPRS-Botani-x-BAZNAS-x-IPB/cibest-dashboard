@@ -1,6 +1,7 @@
 <?php
 
 use App\Enums\UserRole;
+use App\Enums\VerificationStatus;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -22,6 +23,9 @@ return new class extends Migration
             $table->timestamps();
 
             $table->enum('user_role', UserRole::cases())->default(UserRole::Enumerator->value);
+            $table->enum('admin_verification_status', VerificationStatus::cases())->default(VerificationStatus::Pending->value);
+            $table->timestamp('admin_verified_at')->nullable();
+            $table->foreignId('admin_verified_by')->nullable()->constrained('users');
         });
 
         Schema::create('password_reset_tokens', function (Blueprint $table) {

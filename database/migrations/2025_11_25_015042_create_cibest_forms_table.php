@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\FormType;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -15,6 +16,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained();
             $table->timestamps();
+            $table->enum('type', FormType::cases());
 
             $table->string('nama_enumerator');
             $table->date('waktu_pengambilan_data');

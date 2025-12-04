@@ -13,7 +13,7 @@ import { Spinner } from '@/components/ui/spinner';
 
 const breadcrumbs: BreadcrumbItem[] = [
   {
-    title: 'CIBEST',
+    title: 'BPRS',
     href: cibest().url,
   },
 ];
@@ -72,7 +72,7 @@ export default function Cibest() {
     <AppLayout breadcrumbs={breadcrumbs}>
       <Head title="Survei CIBEST" />
       <div className="flex h-full flex-col flex-1 gap-4 overflow-x-auto rounded-xl p-4">
-        <h1 className='font-bold'>Survei CIBEST</h1>
+        <h1 className='font-bold'>Survei BPRS</h1>
         <p>
           Unduh template excel <a href="/Template Cibest.xlsx" className='underline underline-offset-4'>disini</a>
         </p>

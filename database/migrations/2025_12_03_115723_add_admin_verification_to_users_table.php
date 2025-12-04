@@ -12,10 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->enum('admin_verification_status', ['pending', 'verified', 'rejected'])->default('pending');
-            $table->timestamp('admin_verified_at')->nullable();
-            $table->unsignedBigInteger('admin_verified_by')->nullable();
-            $table->foreign('admin_verified_by')->references('id')->on('users')->onDelete('set null');
+            
         });
     }
 
