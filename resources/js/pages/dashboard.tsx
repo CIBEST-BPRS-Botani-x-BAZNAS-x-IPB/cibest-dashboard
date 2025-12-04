@@ -1,4 +1,3 @@
-import { Button } from '@/components/ui/button';
 import AppLayout from '@/layouts/app-layout';
 import { baznas, cibest, dashboard } from '@/routes';
 import { SharedData, type BreadcrumbItem } from '@/types';
@@ -18,18 +17,20 @@ export default function Dashboard() {
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Dashboard" />
-            <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
-                <h1 className='font-bold'>Halo {auth.user.user_role} {auth.user.name}! </h1>
-                <div className="flex flex-row gap-4">
-                    <Link href={cibest.url()} className='w-fit h-fit'>
-                        <Button className='w-fit h-fit flex-col justify-center items-center' variant={'outline'}>
-                            <HandHeart /> Survei BPRS
-                        </Button>
+            <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4 bg-gray-50">
+                <h1 className='font-bold text-2xl text-teal-600'>Halo {auth.user.user_role} {auth.user.name}! </h1>
+                <div className="flex flex-row gap-6 mt-8">
+                    <Link href={cibest.url()} className='w-64 h-32'>
+                        <div className="w-full h-full bg-yellow-500 hover:bg-yellow-600 rounded-lg shadow-md flex flex-col items-center justify-center text-white transition-all duration-200 transform hover:scale-105">
+                            <HandHeart className="h-10 w-10 mb-2" />
+                            <span className="font-semibold text-lg">Survei BPRS</span>
+                        </div>
                     </Link>
-                    <Link href={baznas.url()} className='w-fit h-fit'>
-                        <Button className='w-fit h-fit flex-col justify-center items-center' variant={'outline'}>
-                            <HandCoins /> Survei BAZNAS
-                        </Button>
+                    <Link href={baznas.url()} className='w-64 h-32'>
+                        <div className="w-full h-full bg-teal-500 hover:bg-teal-600 rounded-lg shadow-md flex flex-col items-center justify-center text-white transition-all duration-200 transform hover:scale-105">
+                            <HandCoins className="h-10 w-10 mb-2" />
+                            <span className="font-semibold text-lg">Survei BAZNAS</span>
+                        </div>
                     </Link>
                 </div>
             </div>

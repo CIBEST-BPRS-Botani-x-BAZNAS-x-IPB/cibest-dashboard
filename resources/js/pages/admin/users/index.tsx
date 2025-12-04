@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Head, Link, router, usePage } from '@inertiajs/react';
 import { SharedData } from '@/types';
+import AdminLayout from '@/layouts/admin-layout';
 
 interface User {
     id: number;
@@ -78,9 +79,8 @@ export default function Users({ pendingUsers, verifiedUsers, rejectedUsers }: Pr
     }
 
     return (
-        <div className="container mx-auto px-4 py-8">
+        <AdminLayout title="User Management">
             <Head title="User Management" />
-            <h1 className="text-3xl font-bold text-gray-800 mb-8">User Management</h1>
 
             {status && (
                 <div className="mb-6 p-4 bg-green-100 text-green-800 rounded">
@@ -90,7 +90,7 @@ export default function Users({ pendingUsers, verifiedUsers, rejectedUsers }: Pr
 
             {/* Pending Users Section */}
             <div className="mb-12">
-                <h2 className="text-2xl font-semibold text-gray-700 mb-4">Pending Verification</h2>
+                <h2 className="text-2xl font-semibold text-teal-600 mb-4">Pending Verification</h2>
                 {pendingUsers.length > 0 ? (
                     <div className="bg-white shadow-md rounded-lg overflow-hidden">
                         <table className="min-w-full divide-y divide-gray-200">
@@ -119,17 +119,17 @@ export default function Users({ pendingUsers, verifiedUsers, rejectedUsers }: Pr
                                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                             <button
                                                 onClick={() => approveUser(user.id)}
-                                                className="text-green-600 hover:text-green-900 mr-4"
+                                                className="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded mr-2"
                                             >
                                                 Approve
                                             </button>
                                             <button
                                                 onClick={() => rejectUser(user.id)}
-                                                className="text-red-600 hover:text-red-900"
+                                                className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded mr-2"
                                             >
                                                 Reject
                                             </button>
-                                            <Link href={`/admin/users/${user.id}`} className="ml-4 text-blue-600 hover:text-blue-900">
+                                            <Link href={`/admin/users/${user.id}`} className="bg-teal-500 hover:bg-teal-600 text-white px-3 py-1 rounded">
                                                 View
                                             </Link>
                                         </td>
@@ -145,7 +145,7 @@ export default function Users({ pendingUsers, verifiedUsers, rejectedUsers }: Pr
 
             {/* Verified Users Section */}
             <div className="mb-12">
-                <h2 className="text-2xl font-semibold text-gray-700 mb-4">Verified Users</h2>
+                <h2 className="text-2xl font-semibold text-teal-600 mb-4">Verified Users</h2>
                 {verifiedUsers.length > 0 ? (
                     <div className="bg-white shadow-md rounded-lg overflow-hidden">
                         <table className="min-w-full divide-y divide-gray-200">
@@ -182,7 +182,7 @@ export default function Users({ pendingUsers, verifiedUsers, rejectedUsers }: Pr
 
             {/* Rejected Users Section */}
             <div>
-                <h2 className="text-2xl font-semibold text-gray-700 mb-4">Rejected Users</h2>
+                <h2 className="text-2xl font-semibold text-teal-600 mb-4">Rejected Users</h2>
                 {rejectedUsers.length > 0 ? (
                     <div className="bg-white shadow-md rounded-lg overflow-hidden">
                         <table className="min-w-full divide-y divide-gray-200">
@@ -216,6 +216,6 @@ export default function Users({ pendingUsers, verifiedUsers, rejectedUsers }: Pr
                     <div className="text-center py-4 text-gray-500">No rejected users</div>
                 )}
             </div>
-        </div>
+        </AdminLayout>
     );
 }

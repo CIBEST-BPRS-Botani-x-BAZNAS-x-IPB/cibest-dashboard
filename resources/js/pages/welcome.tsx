@@ -47,7 +47,7 @@ export default function Welcome({
               {auth.user ? (
                 <Link
                   href={dashboard()}
-                  className="inline-block rounded-sm border border-[#19140035] px-5 py-1.5 text-sm leading-normal text-[#1b1b18] hover:border-[#1915014a] dark:border-[#3E3E3A] dark:text-[#EDEDEC] dark:hover:border-[#62605b]"
+                  className="inline-block rounded-sm border border-teal-500 bg-teal-500 px-5 py-1.5 text-sm leading-normal text-white hover:bg-teal-600 hover:border-teal-600"
                 >
                   Dashboard
                 </Link>
@@ -55,14 +55,14 @@ export default function Welcome({
                 <>
                   <Link
                     href={login()}
-                    className="inline-block rounded-sm border border-transparent px-5 py-1.5 text-sm leading-normal text-[#1b1b18] hover:border-[#19140035] dark:text-[#EDEDEC] dark:hover:border-[#3E3E3A]"
+                    className="inline-block rounded-sm border border-yellow-500 bg-yellow-500 px-5 py-1.5 text-sm leading-normal text-white hover:bg-yellow-600 hover:border-yellow-600"
                   >
                     Log in
                   </Link>
                   {canRegister && (
                     <Link
                       href={register()}
-                      className="inline-block rounded-sm border border-[#19140035] px-5 py-1.5 text-sm leading-normal text-[#1b1b18] hover:border-[#1915014a] dark:border-[#3E3E3A] dark:text-[#EDEDEC] dark:hover:border-[#62605b]"
+                      className="inline-block rounded-sm border border-teal-500 bg-teal-500 px-5 py-1.5 text-sm leading-normal text-white hover:bg-teal-600 hover:border-teal-600"
                     >
                       Register
                     </Link>

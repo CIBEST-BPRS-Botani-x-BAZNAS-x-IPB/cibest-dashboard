@@ -20,8 +20,8 @@ const setCookie = (name: string, value: string, days = 365) => {
 };
 
 const applyTheme = (appearance: Appearance) => {
-    const isDark =
-        appearance === 'dark' || (appearance === 'system' && prefersDark());
+    // Always force light mode regardless of the appearance parameter
+    const isDark = false;
 
     document.documentElement.classList.toggle('dark', isDark);
     document.documentElement.style.colorScheme = isDark ? 'dark' : 'light';
@@ -41,8 +41,8 @@ const handleSystemThemeChange = () => {
 };
 
 export function initializeTheme() {
-    const savedAppearance =
-        (localStorage.getItem('appearance') as Appearance) || 'system';
+    // Force light mode by default
+    const savedAppearance = 'light';
 
     applyTheme(savedAppearance);
 
@@ -51,27 +51,28 @@ export function initializeTheme() {
 }
 
 export function useAppearance() {
-    const [appearance, setAppearance] = useState<Appearance>('system');
+    const [appearance, setAppearance] = useState<Appearance>('light');
 
     const updateAppearance = useCallback((mode: Appearance) => {
-        setAppearance(mode);
+        // Force light mode - ignore any mode changes
+        const forcedMode = 'light';
+        setAppearance(forcedMode);
 
         // Store in localStorage for client-side persistence...
-        localStorage.setItem('appearance', mode);
+        localStorage.setItem('appearance', forcedMode);
 
         // Store in cookie for SSR...
-        setCookie('appearance', mode);
+        setCookie('appearance', forcedMode);
 
-        applyTheme(mode);
+        applyTheme(forcedMode);
     }, []);
 
     useEffect(() => {
-        const savedAppearance = localStorage.getItem(
-            'appearance',
-        ) as Appearance | null;
+        // Force light mode on load
+        const forcedMode = 'light';
 
         // eslint-disable-next-line react-hooks/set-state-in-effect
-        updateAppearance(savedAppearance || 'system');
+        updateAppearance(forcedMode);
 
         return () =>
             mediaQuery()?.removeEventListener(

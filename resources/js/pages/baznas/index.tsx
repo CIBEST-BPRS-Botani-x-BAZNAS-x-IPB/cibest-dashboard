@@ -71,10 +71,13 @@ export default function Baznas() {
   return (
     <AppLayout breadcrumbs={breadcrumbs}>
       <Head title="Survei BAZNAS" />
-      <div className="flex h-full flex-col flex-1 gap-4 overflow-x-auto rounded-xl p-4">
-        <h1 className='font-bold'>Survei BAZNAS</h1>
-        <p>Unduh template excel <a href="/Template Baznas.xlsx" className='underline underline-offset-4'>disini</a></p>
-        <div className='flex flex-col w-fit h-fit gap-4'>
+      <div className="flex h-full flex-col flex-1 gap-4 overflow-x-auto rounded-xl p-4 bg-gray-50">
+        <h1 className='font-bold text-2xl text-teal-600'>Survei BAZNAS</h1>
+        <p className="text-gray-600">
+          Unduh template excel <a href="/Template Baznas.xlsx" className='text-teal-600 underline underline-offset-4 hover:text-teal-800'>disini</a>
+        </p>
+
+        <div className='flex flex-col w-full max-w-md bg-white p-6 rounded-lg shadow-md'>
           <input
             ref={inputRef}
             type="file"
@@ -86,30 +89,35 @@ export default function Baznas() {
           <Button
             variant="outline"
             onClick={() => inputRef.current?.click()}
-            className="flex items-center gap-2"
+            className="flex items-center gap-2 bg-teal-500 text-white hover:text-white hover:bg-teal-600 w-full py-3"
           >
             <Upload className="h-4 w-4" />
             Upload File
           </Button>
 
           {file ? (
-            <div className='flex gap-8 items-center'>
-              <p className='text-sm flex gap-2 items-center'><FileIcon /> {file.name}</p>
-              <p className='text-sm flex gap-2 items-center'><HardDrive /> {formatFileSize(file.size)}</p>
+            <div className='flex flex-col gap-2 mt-4'>
+              <p className='text-sm flex gap-2 items-center text-gray-700'><FileIcon className="text-teal-600" /> {file.name}</p>
+              <p className='text-sm flex gap-2 items-center text-gray-700'><HardDrive className="text-teal-600" /> {formatFileSize(file.size)}</p>
             </div>
           ) : (
-            <p className='text-destructive'>* xlsx,xls,csv</p>
+            <p className='text-sm text-gray-500 mt-4'>* Format yang diperbolehkan: xlsx, xls, csv</p>
           )}
 
-          <Button onClick={handleFileUpload} disabled={isLoading}>
+          <Button
+            onClick={handleFileUpload}
+            disabled={isLoading || !file}
+            className="mt-4 bg-yellow-500 hover:bg-yellow-600 text-white py-3 text-lg"
+          >
             {isLoading && <Spinner />}
             Submit
           </Button>
         </div>
+
         {
           flash?.importError && (
-            <div className="w-full h-fit flex flex-col gap-4 overflow-auto">
-              <p className='text-destructive'><b>{flash.importError.length}</b> &nbsp; input tidak memenuhi standar data</p>
+            <div className="w-full h-fit flex flex-col gap-4 overflow-auto bg-white p-6 rounded-lg shadow-md">
+              <p className='text-destructive font-semibold'><b>{flash.importError.length}</b> &nbsp; input tidak memenuhi standar data</p>
               <DataTable columns={columns} data={flash?.importError} />
             </div>
           )
