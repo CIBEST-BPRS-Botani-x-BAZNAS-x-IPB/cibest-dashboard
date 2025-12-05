@@ -19,7 +19,6 @@ class JangkaWaktuOptionSeeder extends Seeder
             ['value' => '1 tahun', 'is_other' => false],
             ['value' => '2 tahun', 'is_other' => false],
             ['value' => '3 tahun', 'is_other' => false],
-            ['value' => 'Lainnya', 'is_other' => false],
         ]);
     }
 }

@@ -15,7 +15,6 @@ use App\Models\KeteranganShalatLikert;
 use App\Models\KeteranganZakatInfakLikert;
 use App\Models\LembagaZiswafCheckbox;
 use App\Models\PembiayaanLainCheckbox;
-use App\Models\PembinaanPendampinganSection;
 use App\Models\PendidikanFormalOption;
 use App\Models\PendidikanNonformalOption;
 use App\Models\PenggunaanPembiayaanCheckbox;
@@ -32,6 +31,11 @@ class CibestImport extends BaseImport
     public function startRow(): int
     {
         return 2;
+    }
+
+    public function chunkSize(): int
+    {
+        return 10; 
     }
 
     public function mapping(int $index): array|string|null
@@ -367,7 +371,7 @@ class CibestImport extends BaseImport
                         'bulan_tahun_menerima' => Carbon::parse($row[34])->format('Y-m-d'),
                         'lembaga_keuangan_syariah' => $row[35],
                         'akad_pembiayaan_checkbox' => $this->getCheckboxId(AkadPembiayaanCheckbox::class, $row[36]),
-                        'jangka_waktu_option_id' => $this->getOptionId(JangkaWaktuOption::class, $row[37], 37),
+                        'jangka_waktu_option_id' => $this->getOptionId(JangkaWaktuOption::class, $row[37], 37, true),
                         'frekuensi_penerimaan' => $row[38],
                         'total_nilai_pembiayaan' => $row[39],
                         'penggunaan_pembiayaan_checkbox' => $this->getCheckboxId(PenggunaanPembiayaanCheckbox::class, $row[40]),

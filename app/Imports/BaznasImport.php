@@ -2,9 +2,6 @@
 
 namespace App\Imports;
 
-use App\Models\AkadPembiayaanCheckbox;
-use App\Models\FrekuensiPendampinganOption;
-use App\Models\JangkaWaktuOption;
 use App\Models\JenisKelaminOption;
 use App\Models\JenisPekerjaanOption;
 use App\Models\KeteranganKebijakanPemerintahLikert;
@@ -13,10 +10,8 @@ use App\Models\KeteranganPuasaLikert;
 use App\Models\KeteranganShalatLikert;
 use App\Models\KeteranganZakatInfakLikert;
 use App\Models\LembagaZiswafCheckbox;
-use App\Models\PembiayaanLainCheckbox;
 use App\Models\PendidikanFormalOption;
 use App\Models\PendidikanNonformalOption;
-use App\Models\PenggunaanPembiayaanCheckbox;
 use App\Models\ProgramBantuanCheckbox;
 use App\Models\Province;
 use App\Models\StatusPekerjaanOption;
@@ -30,6 +25,11 @@ class BaznasImport extends BaseImport
     public function startRow(): int
     {
         return 2;
+    }
+    
+    public function chunkSize(): int
+    {
+        return 10;
     }
 
     public function mapping(int $index): array|string|null

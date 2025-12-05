@@ -9,10 +9,11 @@ use Maatwebsite\Excel\Concerns\SkipsEmptyRows;
 use Maatwebsite\Excel\Concerns\SkipsFailures;
 use Maatwebsite\Excel\Concerns\SkipsOnFailure;
 use Maatwebsite\Excel\Concerns\ToCollection;
+use Maatwebsite\Excel\Concerns\WithChunkReading;
 use Maatwebsite\Excel\Concerns\WithStartRow;
 use Maatwebsite\Excel\Concerns\WithValidation;
 
-abstract class BaseImport implements ToCollection, WithStartRow, WithValidation, SkipsOnFailure, SkipsEmptyRows
+abstract class BaseImport implements ToCollection, WithStartRow, WithValidation, SkipsOnFailure, SkipsEmptyRows, WithChunkReading
 {
     use Importable, SkipsFailures;
 
@@ -24,6 +25,8 @@ abstract class BaseImport implements ToCollection, WithStartRow, WithValidation,
     }
 
     abstract public function startRow(): int;
+
+    abstract public function chunkSize(): int;
 
     abstract public function mapping(int $index): array|string|null;
 
