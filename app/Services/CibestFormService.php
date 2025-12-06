@@ -13,7 +13,6 @@ use App\Models\PembinaanPendampinganSection;
 use App\Models\PendapatanKetenagakerjaanSection;
 use App\Models\PovertyStandard;
 use Illuminate\Support\Arr;
-use Illuminate\Support\Facades\Auth;
 
 class CibestFormService
 {
@@ -23,7 +22,7 @@ class CibestFormService
      * @param array $importData The imported data rows
      * @return void
      */
-    public function processFormData(array $importData, string $type)
+    public function processFormData(array $importData, string $type, int $userId)
     {
         foreach ($importData as $row) {
             $bantuanZiswaf = null;
@@ -85,7 +84,7 @@ class CibestFormService
                 'bantuan_ziswaf_section_id' => $bantuanZiswaf->id ?? null,
                 'pembiayaan_syariah_section_id' => $pembiayaanSyariah->id ?? null,
                 'pembinaan_pendampingan_section_id' => $pembinaanPendampingan->id ?? null,
-                'user_id' => Auth::user()->id,
+                'user_id' => $userId,
                 'type' => $type,
             ]);
 

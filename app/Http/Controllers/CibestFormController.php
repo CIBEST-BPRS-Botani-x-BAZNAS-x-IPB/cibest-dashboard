@@ -5,9 +5,14 @@ namespace App\Http\Controllers;
 use App\Enums\FormType;
 use App\Imports\BaznasImport;
 use App\Imports\CibestImport;
+use App\Jobs\BaznasImportJob;
+use App\Jobs\CibestImportJob;
+use App\Models\ImportJob;
 use App\Models\PovertyStandard;
 use App\Services\CibestFormService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 
 class CibestFormController extends Controller
@@ -17,7 +22,7 @@ class CibestFormController extends Controller
         return Inertia::render('cibest/index');
     }
 
-    public function uploadCibest(Request $request, CibestFormService $cibestFormService)
+    public function uploadCibest(Request $request)
     {
         $request->validate([
             'file' => [
@@ -28,32 +33,15 @@ class CibestFormController extends Controller
         ]);
 
         $file = $request->file('file');
-        $import = new CibestImport();
-        $import->import($file);
 
-        if ($import->failures()->isNotEmpty()) {
-            $errors = [];
-            foreach ($import->failures() as $failure) {
-                $errors[] = [
-                    'row' => $failure->row(),
-                    'attribute' => $import->mapping($failure->attribute()),
-                    'error' => collect($failure->errors())->map(function ($err) {
-                        $clean = preg_replace('/^\d+\s*/', '', $err);
-                        return ucfirst($clean);
-                    })->join(', '),
-                    'value' => ($failure->values())[$failure->attribute()]
-                ];
-            }
+        // Store the file temporarily in the storage
+        $unique_name = uniqid() . '_' . $file->getClientOriginalName();
+        $tempPath = Storage::putFileAs('temp-imports', $file, $unique_name);
 
-            return redirect()->back()->with([
-                'importError' => $errors,
-                'error' => "Gagal menambahkan data dari file {$file->getClientOriginalName()}"
-            ]);
-        }
+        // Dispatch the import job to run in the background
+        CibestImportJob::dispatch($tempPath, Auth::user()->id)->withoutDelay();
 
-        $cibestFormService->processFormData($import->data, FormType::BPRS->value);
-
-        return redirect()->back()->with('success', "Berhasil menambahkan data dari file \"{$file->getClientOriginalName()}\"");
+        return redirect()->back()->with('success', "File {$file->getClientOriginalName()} sedang diproses di latar belakang. Silakan periksa kembali nanti untuk hasilnya.");
     }
 
     public function baznasIndex()
@@ -61,7 +49,7 @@ class CibestFormController extends Controller
         return Inertia::render('baznas/index');
     }
 
-    public function uploadBaznas(Request $request, CibestFormService $cibestFormService)
+    public function uploadBaznas(Request $request)
     {
         $request->validate([
             'file' => [
@@ -72,31 +60,35 @@ class CibestFormController extends Controller
         ]);
 
         $file = $request->file('file');
-        $import = new BaznasImport();
-        $import->import($file);
 
-        if ($import->failures()->isNotEmpty()) {
-            $errors = [];
-            foreach ($import->failures() as $failure) {
-                $errors[] = [
-                    'row' => $failure->row(),
-                    'attribute' => $import->mapping($failure->attribute()),
-                    'error' => collect($failure->errors())->map(function ($err) {
-                        $clean = preg_replace('/^\d+\s*/', '', $err);
-                        return ucfirst($clean);
-                    })->join(', '),
-                    'value' => ($failure->values())[$failure->attribute()]
-                ];
-            }
+        // Store the file temporarily in the storage
+        $unique_name = uniqid() . '_' . $file->getClientOriginalName();
+        $tempPath = Storage::putFileAs('temp-imports', $file, $unique_name);
 
-            return redirect()->back()->with([
-                'importError' => $errors,
-                'error' => "Gagal menambahkan data dari file {$file->getClientOriginalName()}"
-            ]);
+        // Dispatch the import job to run in the background
+        BaznasImportJob::dispatch($tempPath, Auth::user()->id)->withoutDelay();
+
+        return redirect()->back()->with('success', "File {$file->getClientOriginalName()} sedang diproses di latar belakang. Silakan periksa kembali nanti untuk hasilnya.");
+    }
+
+    public function getImportJobs(Request $request)
+    {
+        $type = $request->query('type'); // 'cibest' or 'baznas'
+        $status = $request->query('status'); // 'pending', 'processing', 'completed', 'failed'
+
+        $query = ImportJob::where('user_id', Auth::user()->id);
+
+        if ($type) {
+            $query->where('type', $type);
         }
 
-        $cibestFormService->processFormData($import->data, FormType::BAZNAS->value);
-        return redirect()->back()->with('success', "Berhasil menambahkan data dari file \"{$file->getClientOriginalName()}\"");
+        if ($status) {
+            $query->where('status', $status);
+        }
+
+        $importJobs = $query->orderBy('created_at', 'desc')->paginate(10);
+
+        return response()->json($importJobs);
     }
 
     public function povertyStandardsIndex()

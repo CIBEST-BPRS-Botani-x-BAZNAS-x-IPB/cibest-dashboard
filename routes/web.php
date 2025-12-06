@@ -29,6 +29,9 @@ Route::middleware(['auth', 'verified', 'admin.verified'])->group(function () {
             Route::post('upload', 'uploadBaznas')->name('baznas-upload');
         });
 
+        // Route to get import job status
+        Route::get('import-jobs', 'getImportJobs')->name('import-jobs');
+
         Route::prefix('poverty-standards')->group(function () {
             Route::get('/', 'povertyStandardsIndex')->name('poverty-standards');
             Route::post('/', 'povertyStandardsStore')->name('poverty-standards-store');
