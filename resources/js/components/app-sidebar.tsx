@@ -9,10 +9,10 @@ import {
     SidebarMenuButton,
     SidebarMenuItem,
 } from '@/components/ui/sidebar';
-import { baznas, cibest, dashboard, home } from '@/routes';
+import { baznas, cibest, dashboard, home, povertyStandards } from '@/routes';
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/react';
-import { HandCoins, HandHeart, LayoutGrid } from 'lucide-react';
+import { HandCoins, HandHeart, LayoutGrid, Scale } from 'lucide-react';
 import AppLogo from './app-logo';
 
 const mainNavItems: NavItem[] = [
@@ -30,6 +30,11 @@ const mainNavItems: NavItem[] = [
         title: 'BAZNAS',
         href: baznas.url(),
         icon: HandCoins,
+    },
+    {
+        title: 'Standar Kemiskinan',
+        href: povertyStandards.url(),
+        icon: Scale,
     },
 ];
 

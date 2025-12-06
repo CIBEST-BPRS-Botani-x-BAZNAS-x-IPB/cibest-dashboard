@@ -13,8 +13,15 @@ class PovertyStandard extends Model
     public $timestamps = false;
 
     protected $fillable = [
-        'name', 'nilai_keluarga', 'nilai_per_tahun', 'log_natural', 'index_kesejahteraan_cibest', 'besaran_nilai_cibest_model'
+        'name', 'nilai_keluarga', 'nilai_per_tahun', 'log_natural'
     ];
+
+    // Accessor to calculate index_kesejahteraan_cibest based on related data (this is just for reference - calculation will be done in controller)
+    public function getIndexKesejahteraanCibestAttribute()
+    {
+        // Note: This is illustrative. The actual calculation is done in the DashboardController
+        return 0; // Placeholder since this is calculated dynamically
+    }
 
     public function cibestForms()
     {

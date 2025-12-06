@@ -7,7 +7,7 @@ interface IndicatorsTableProps {
 export function IndicatorsTable({ povertyIndicators }: IndicatorsTableProps) {
   return (
     <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
-      <h2 className="text-xl font-semibold text-gray-800 mb-4">Indikator Kemiskinan</h2>
+      <h2 className="text-xl font-semibold text-gray-800 mb-4">Indikator Kemiskinan Umum</h2>
       <div className="overflow-x-auto">
         <table className="w-full text-sm">
           <thead>

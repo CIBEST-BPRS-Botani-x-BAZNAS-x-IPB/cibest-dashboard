@@ -84,11 +84,20 @@ class DashboardController extends Controller
 
         // Format the poverty standards data for frontend
         $formattedStandards = $povertyStandards->map(function ($standard) {
+            // Calculate index_kesejahteraan_cibest: count of respondents in quadrant 1 after / total respondents for this poverty standard
+            $totalRespondentsForStandard = CibestQuadrant::where('poverty_id', $standard->id)->count();
+            $q1AfterCount = CibestQuadrant::where('poverty_id', $standard->id)
+                ->where('kuadran_setelah', 1)
+                ->count();
+
+            $indexKesejahteraanCibest = $totalRespondentsForStandard > 0
+                ? $q1AfterCount / $totalRespondentsForStandard
+                : 0;
+
             return [
                 'id' => $standard->id,
                 'name' => $standard->name,
-                'index_kesejahteraan_cibest' => $standard->index_kesejahteraan_cibest,
-                'besaran_nilai_cibest_model' => $standard->besaran_nilai_cibest_model,
+                'index_kesejahteraan_cibest' => $indexKesejahteraanCibest,
                 'nilai_keluarga' => $standard->nilai_keluarga,
                 'nilai_per_tahun' => $standard->nilai_per_tahun,
                 'log_natural' => $standard->log_natural,

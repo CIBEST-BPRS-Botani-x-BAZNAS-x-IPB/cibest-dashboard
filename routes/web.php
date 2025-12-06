@@ -28,6 +28,13 @@ Route::middleware(['auth', 'verified', 'admin.verified'])->group(function () {
             Route::get('/', 'baznasIndex')->name('baznas');
             Route::post('upload', 'uploadBaznas')->name('baznas-upload');
         });
+
+        Route::prefix('poverty-standards')->group(function () {
+            Route::get('/', 'povertyStandardsIndex')->name('poverty-standards');
+            Route::post('/', 'povertyStandardsStore')->name('poverty-standards-store');
+            Route::put('/{povertyStandard}', 'povertyStandardsUpdate')->name('poverty-standards-update');
+            Route::delete('/{povertyStandard}', 'povertyStandardsDestroy')->name('poverty-standards-destroy');
+        });
     });
 
     // Admin routes - requires admin role

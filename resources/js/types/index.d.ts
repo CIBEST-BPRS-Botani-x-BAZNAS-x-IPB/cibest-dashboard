@@ -57,8 +57,7 @@ interface QuadrantData {
 export interface PovertyStandard {
   id: number;
   name: string;
-  index_kesejahteraan_cibest: number | null;
-  besaran_nilai_cibest_model: number | null;
+  index_kesejahteraan_cibest: number;
   nilai_keluarga: number | null;
   nilai_per_tahun: number | null;
   log_natural: number | null;
