@@ -1,6 +1,6 @@
 export const QUADRANT_COLORS = {
-  Q1: "#20B2AA", // Teal - Sejahtera
-  Q2: "#FFB6C1", // Pink - Material
-  Q3: "#98FF98", // Light Green - Spiritual
-  Q4: "#FFD4A3", // Light Orange - Absolut
+  Q1: "#22c55e", // Green - Sejahtera
+  Q2: "#3b82f6", // Blue - Material
+  Q3: "#eab308", // Yellow - Spiritual
+  Q4: "#ef4444", // Red - Absolut
 }

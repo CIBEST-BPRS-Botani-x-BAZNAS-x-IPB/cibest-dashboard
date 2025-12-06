@@ -122,32 +122,32 @@ export function QuadrantDistribution({ quadrantData }: QuadrantDistributionProps
           {/* Quadrant Grid */}
           <div className="lg:col-span-2">
             <div className="grid grid-cols-2 gap-4">
-              <div className="bg-teal-100 rounded-lg p-4 border-2 border-teal-300">
-                <h3 className="font-semibold text-teal-700 mb-2">Quadrant I</h3>
-                <p className="text-sm text-teal-700">Sejahtera (+,+)</p>
-                <p className="text-2xl font-bold text-teal-700 mt-2">
-                  {currentStandard ? calculatePercentage(1, 'after') + '%' : '0%'}
-                </p>
-              </div>
-              <div className="bg-pink-100 rounded-lg p-4 border-2 border-pink-300">
-                <h3 className="font-semibold text-pink-700 mb-2">Quadrant II</h3>
-                <p className="text-sm text-pink-700">Material (-,+)</p>
-                <p className="text-2xl font-bold text-pink-700 mt-2">
+              <div className="bg-blue-100 rounded-lg p-4 border-2 border-blue-300">
+                <h3 className="font-semibold text-blue-700 mb-2">Quadrant II</h3>
+                <p className="text-sm text-blue-700">Material (-,+)</p>
+                <p className="text-2xl font-bold text-blue-700 mt-2">
                   {currentStandard ? calculatePercentage(2, 'after') + '%' : '0%'}
                 </p>
               </div>
               <div className="bg-green-100 rounded-lg p-4 border-2 border-green-300">
-                <h3 className="font-semibold text-green-700 mb-2">Quadrant III</h3>
-                <p className="text-sm text-green-700">Spiritual (-,-)</p>
+                <h3 className="font-semibold text-green-700 mb-2">Quadrant I</h3>
+                <p className="text-sm text-green-700">Sejahtera (+,+)</p>
                 <p className="text-2xl font-bold text-green-700 mt-2">
-                  {currentStandard ? calculatePercentage(3, 'after') + '%' : '0%'}
+                  {currentStandard ? calculatePercentage(1, 'after') + '%' : '0%'}
                 </p>
               </div>
-              <div className="bg-orange-100 rounded-lg p-4 border-2 border-orange-300">
-                <h3 className="font-semibold text-orange-700 mb-2">Quadrant IV</h3>
-                <p className="text-sm text-orange-700">Absolut (+,-)</p>
-                <p className="text-2xl font-bold text-orange-700 mt-2">
+              <div className="bg-red-100 rounded-lg p-4 border-2 border-red-300">
+                <h3 className="font-semibold text-red-700 mb-2">Quadrant IV</h3>
+                <p className="text-sm text-red-700">Absolut (+,-)</p>
+                <p className="text-2xl font-bold text-red-700 mt-2">
                   {currentStandard ? calculatePercentage(4, 'after') + '%' : '0%'}
+                </p>
+              </div>
+              <div className="bg-yellow-100 rounded-lg p-4 border-2 border-yellow-300">
+                <h3 className="font-semibold text-yellow-700 mb-2">Quadrant III</h3>
+                <p className="text-sm text-yellow-700">Spiritual (-,-)</p>
+                <p className="text-2xl font-bold text-yellow-700 mt-2">
+                  {currentStandard ? calculatePercentage(3, 'after') + '%' : '0%'}
                 </p>
               </div>
             </div>

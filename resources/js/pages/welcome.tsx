@@ -77,7 +77,10 @@ export default function Welcome({
       {/* Content */}
       <div className="max-w-7xl mx-auto px-4 py-8">
         <QuadrantDistribution quadrantData={quadrantDistribution} />
-        <IndonesiaMap />
+        <IndonesiaMap
+          provinces={allProvincesByStandard[0] || []}
+          povertyStandardId={povertyStandards[0]?.id || 0}
+        />
         <div className="mt-6">
           <ProvinceTable
             provinces={provinces}

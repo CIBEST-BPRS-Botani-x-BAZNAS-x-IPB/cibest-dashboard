@@ -58,9 +58,9 @@ export interface PovertyStandard {
   id: number;
   name: string;
   index_kesejahteraan_cibest: number;
-  nilai_keluarga: number | null;
-  nilai_per_tahun: number | null;
-  log_natural: number | null;
+  nilai_keluarga: number;
+  nilai_per_tahun: number;
+  log_natural: number;
 }
 
 export interface PovertyIndicator {

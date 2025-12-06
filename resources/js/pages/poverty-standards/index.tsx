@@ -1,7 +1,7 @@
 import { Button } from '@/components/ui/button';
 import AppLayout from '@/layouts/app-layout';
 import { povertyStandards, povertyStandardsStore, povertyStandardsUpdate, povertyStandardsDestroy } from '@/routes';
-import { type BreadcrumbItem } from '@/types';
+import { PovertyStandard, type BreadcrumbItem } from '@/types';
 import { Head, router } from '@inertiajs/react';
 import { Pencil, Plus, Trash2 } from 'lucide-react';
 import { useState } from 'react';

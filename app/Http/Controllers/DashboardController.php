@@ -161,11 +161,16 @@ class DashboardController extends Controller
 
             // Convert to array format and determine dominant quadrant
             $provincesForStandard = array_map(function($province) use ($standard) {
-                $maxQ = max($province->Q1, $province->Q2, $province->Q3, $province->Q4);
-                $dominant = 'Q1';
-                if ($province->Q2 == $maxQ) $dominant = 'Q2';
-                if ($province->Q3 == $maxQ) $dominant = 'Q3';
-                if ($province->Q4 == $maxQ) $dominant = 'Q4';
+                // Check if all quadrants are zero (no data)
+                if ($province->Q1 == 0 && $province->Q2 == 0 && $province->Q3 == 0 && $province->Q4 == 0) {
+                    $dominant = 'No Data';
+                } else {
+                    $maxQ = max($province->Q1, $province->Q2, $province->Q3, $province->Q4);
+                    $dominant = 'Q1';
+                    if ($province->Q2 == $maxQ) $dominant = 'Q2';
+                    if ($province->Q3 == $maxQ) $dominant = 'Q3';
+                    if ($province->Q4 == $maxQ) $dominant = 'Q4';
+                }
 
                 return [
                     'id' => $province->id,

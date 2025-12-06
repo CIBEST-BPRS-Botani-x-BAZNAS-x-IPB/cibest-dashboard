@@ -1,6 +1,12 @@
 import { useEffect, useRef } from "react"
+import { Province } from "@/types"
 
-export function IndonesiaMap() {
+interface IndonesiaMapProps {
+  provinces: Province[];
+  povertyStandardId: number;
+}
+
+export function IndonesiaMap({ provinces, povertyStandardId }: IndonesiaMapProps) {
   const mapContainer = useRef<HTMLDivElement>(null)
   const mapInstance = useRef<any>(null)
 
@@ -62,51 +68,81 @@ export function IndonesiaMap() {
           console.log("GeoJSON loaded:", data)
           const geoJsonLayer = L.geoJSON(data, {
             style: (feature: any) => {
-              const provinceName = (
-                feature.properties.PROVINSI || 
-                feature.properties.NAME_1 || 
+              const geoProvinceName = (
+                feature.properties.PROVINSI ||
+                feature.properties.NAME_1 ||
                 feature.properties.WADMPR ||
                 feature.properties.name ||
                 ""
               ).toLowerCase();
-              
-              let fillColor = "#fb923c"; // Q4 - Orange (default for Papua and other islands)
-              let quadrant = "Q4";
-              
-              // Q1 - Green: Sumatera and Java
-              if (provinceName.includes("sumatera") || 
-                  provinceName.includes("sumatra") ||
-                  provinceName.includes("aceh") ||
-                  provinceName.includes("riau") ||
-                  provinceName.includes("jambi") ||
-                  provinceName.includes("bengkulu") ||
-                  provinceName.includes("lampung") ||
-                  provinceName.includes("bangka") ||
-                  provinceName.includes("jawa") ||
-                  provinceName.includes("java") ||
-                  provinceName.includes("jakarta") ||
-                  provinceName.includes("banten") ||
-                  provinceName.includes("yogyakarta")) {
-                fillColor = "#22c55e"; // Green
-                quadrant = "Q1";
+
+              // Find matching province in our data
+              let matchingProvince = null;
+              for (const prov of provinces) {
+                // Compare province names with common variations
+                const compareProvinceName = prov.name.toLowerCase();
+
+                // Try exact match first
+                if (compareProvinceName === geoProvinceName) {
+                  matchingProvince = prov;
+                  break;
+                }
+
+                // Try partial matches (this handles cases like "JAWA TENGAH" vs "Central Java")
+                if (geoProvinceName.includes(compareProvinceName) || compareProvinceName.includes(geoProvinceName)) {
+                  matchingProvince = prov;
+                  break;
+                }
+
+                // Common variations and abbreviations
+                if (compareProvinceName.includes("jawa") && geoProvinceName.includes("jawa")) {
+                  matchingProvince = prov;
+                  break;
+                }
+                if ((compareProvinceName.includes("sumatera") || compareProvinceName.includes("sumatra")) &&
+                    (geoProvinceName.includes("sumatera") || geoProvinceName.includes("sumatra"))) {
+                  matchingProvince = prov;
+                  break;
+                }
+                if (compareProvinceName.includes("kalimantan") && geoProvinceName.includes("kalimantan")) {
+                  matchingProvince = prov;
+                  break;
+                }
+                if (compareProvinceName.includes("sulawesi") && geoProvinceName.includes("sulawesi")) {
+                  matchingProvince = prov;
+                  break;
+                }
               }
-              
-              // Q2 - Pink: Sulawesi
-              else if (provinceName.includes("sulawesi") ||
-                       provinceName.includes("gorontalo")) {
-                fillColor = "#ec4899"; // Pink
-                quadrant = "Q2";
+
+              let fillColor = "#9ca3af"; // Default to gray if no match found (indicating no data)
+              let quadrant = "No Data";
+
+              if (matchingProvince) {
+                const dominantQuadrant = matchingProvince.dominant;
+                quadrant = dominantQuadrant;
+
+                // Set color based on dominant quadrant
+                switch(dominantQuadrant) {
+                  case "Q1":
+                    fillColor = "#22c55e"; // Green
+                    break;
+                  case "Q2":
+                    fillColor = "#3b82f6"; // Blue
+                    break;
+                  case "Q3":
+                    fillColor = "#eab308"; // Yellow
+                    break;
+                  case "Q4":
+                    fillColor = "#ef4444"; // Red
+                    break;
+                  default:
+                    fillColor = "#9ca3af"; // Gray as fallback
+                }
+              } else {
+                fillColor = "#9ca3af"; // Gray to indicate no data
+                quadrant = "No Data";
               }
-              
-              // Q3 - Yellow/Amber: Kalimantan
-              else if (provinceName.includes("kalimantan") ||
-                       provinceName.includes("borneo")) {
-                fillColor = "#fbbf24"; // Amber
-                quadrant = "Q3";
-              }
-              
-              // Q4 remains orange for Papua and other islands (Maluku, Bali, NTB, NTT, etc.)
-              
+
               return {
                 fillColor: fillColor,
                 weight: 2,
@@ -117,37 +153,93 @@ export function IndonesiaMap() {
               }
             },
             onEachFeature: (feature: any, layer: any) => {
-              const provinceName = 
-                feature.properties.PROVINSI || 
-                feature.properties.NAME_1 || 
+              const geoProvinceName =
+                feature.properties.PROVINSI ||
+                feature.properties.NAME_1 ||
                 feature.properties.WADMPR ||
                 feature.properties.name ||
                 "Unknown";
-              
-              const provinceNameLower = provinceName.toLowerCase();
-              let quadrant = "Q4 - Absolut";
-              let color = "#fb923c";
-              
-              if (provinceNameLower.includes("sumatera") || provinceNameLower.includes("sumatra") ||
-                  provinceNameLower.includes("aceh") || provinceNameLower.includes("riau") ||
-                  provinceNameLower.includes("jambi") || provinceNameLower.includes("bengkulu") ||
-                  provinceNameLower.includes("lampung") || provinceNameLower.includes("bangka") ||
-                  provinceNameLower.includes("jawa") || provinceNameLower.includes("java") ||
-                  provinceNameLower.includes("jakarta") || provinceNameLower.includes("banten") ||
-                  provinceNameLower.includes("yogyakarta")) {
-                quadrant = "Q1 - Sejahtera";
-                color = "#22c55e";
-              } else if (provinceNameLower.includes("sulawesi") || provinceNameLower.includes("gorontalo")) {
-                quadrant = "Q2 - Material";
-                color = "#ec4899";
-              } else if (provinceNameLower.includes("kalimantan") || provinceNameLower.includes("borneo")) {
-                quadrant = "Q3 - Spiritual";
-                color = "#fbbf24";
+
+              let matchingProvince = null;
+              for (const prov of provinces) {
+                const compareProvinceName = prov.name.toLowerCase();
+
+                // Try exact match first
+                if (compareProvinceName === geoProvinceName.toLowerCase()) {
+                  matchingProvince = prov;
+                  break;
+                }
+
+                // Try partial matches
+                if (geoProvinceName.toLowerCase().includes(compareProvinceName) ||
+                    compareProvinceName.includes(geoProvinceName.toLowerCase())) {
+                  matchingProvince = prov;
+                  break;
+                }
+
+                // Common variations and abbreviations
+                if (compareProvinceName.includes("jawa") && geoProvinceName.toLowerCase().includes("jawa")) {
+                  matchingProvince = prov;
+                  break;
+                }
+                if ((compareProvinceName.includes("sumatera") || compareProvinceName.includes("sumatra")) &&
+                    (geoProvinceName.toLowerCase().includes("sumatera") || geoProvinceName.toLowerCase().includes("sumatra"))) {
+                  matchingProvince = prov;
+                  break;
+                }
+                if (compareProvinceName.includes("kalimantan") && geoProvinceName.toLowerCase().includes("kalimantan")) {
+                  matchingProvince = prov;
+                  break;
+                }
+                if (compareProvinceName.includes("sulawesi") && geoProvinceName.toLowerCase().includes("sulawesi")) {
+                  matchingProvince = prov;
+                  break;
+                }
               }
-              
+
+              let quadrant = "No Data";
+              let color = "#9ca3af"; // Gray for no data
+
+              if (matchingProvince) {
+                const dominantQuadrant = matchingProvince.dominant;
+
+                switch(dominantQuadrant) {
+                  case "Q1":
+                    quadrant = "Q1 - Sejahtera";
+                    color = "#22c55e"; // Green
+                    break;
+                  case "Q2":
+                    quadrant = "Q2 - Material";
+                    color = "#3b82f6"; // Blue
+                    break;
+                  case "Q3":
+                    quadrant = "Q3 - Spiritual";
+                    color = "#eab308"; // Yellow
+                    break;
+                  case "Q4":
+                    quadrant = "Q4 - Absolut";
+                    color = "#ef4444"; // Red
+                    break;
+                }
+              } else {
+                quadrant = "No Data";
+                color = "#9ca3af"; // Gray for no data
+              }
+
               layer.bindPopup(
-                `<strong>${provinceName}</strong><br/>` +
-                `<span style="color: ${color}">●</span> ${quadrant}`
+                `<strong>${geoProvinceName}</strong><br/>` +
+                (matchingProvince ?
+                  `<div style="margin-top: 8px;">` +
+                  `<div><span style="color: #22c55e;">●</span> Q1: ${matchingProvince?.Q1 || 0}</div>` +
+                  `<div><span style="color: #3b82f6;">●</span> Q2: ${matchingProvince?.Q2 || 0}</div>` +
+                  `<div><span style="color: #eab308;">●</span> Q3: ${matchingProvince?.Q3 || 0}</div>` +
+                  `<div><span style="color: #ef4444;">●</span> Q4: ${matchingProvince?.Q4 || 0}</div>` +
+                  `</div>` +
+                  `<div style="margin-top: 8px; font-weight: bold;">Dominan: ` +
+                  `<span style="color: ${color};">${quadrant.split(' - ')[0]}</span></div>`
+                :
+                  `<div style="margin-top: 8px; color: #9ca3af; font-style: italic;">Tidak ada data tersedia</div>`
+                )
               )
 
               layer.on('mouseover', function() {
