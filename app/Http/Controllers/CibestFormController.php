@@ -2,14 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Enums\FormType;
-use App\Imports\BaznasImport;
-use App\Imports\CibestImport;
 use App\Jobs\BaznasImportJob;
 use App\Jobs\CibestImportJob;
-use App\Models\ImportJob;
-use App\Models\PovertyStandard;
-use App\Services\CibestFormService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -69,103 +63,5 @@ class CibestFormController extends Controller
         BaznasImportJob::dispatch($tempPath, Auth::user()->id)->withoutDelay();
 
         return redirect()->back()->with('success', "File {$file->getClientOriginalName()} sedang diproses di latar belakang. Silakan periksa kembali nanti untuk hasilnya.");
-    }
-
-    public function getImportJobs(Request $request)
-    {
-        $type = $request->query('type'); // 'cibest' or 'baznas'
-        $status = $request->query('status'); // 'pending', 'processing', 'completed', 'failed'
-
-        $query = ImportJob::where('user_id', Auth::user()->id);
-
-        if ($type) {
-            $query->where('type', $type);
-        }
-
-        if ($status) {
-            $query->where('status', $status);
-        }
-
-        $importJobs = $query->orderBy('created_at', 'desc')->paginate(10);
-
-        return response()->json($importJobs);
-    }
-
-    public function getImportJobDetail(ImportJob $importJob)
-    {
-        // Verify the import job belongs to the authenticated user
-        if ($importJob->user_id !== Auth::user()->id) {
-            abort(403, 'Unauthorized');
-        }
-
-        return Inertia::render('import-jobs/detail', [
-            'importJob' => $importJob,
-        ]);
-    }
-
-    public function deleteImportJob(ImportJob $importJob)
-    {
-        // Verify the import job belongs to the authenticated user
-        if ($importJob->user_id !== Auth::user()->id) {
-            abort(403, 'Unauthorized');
-        }
-
-        $filename = $importJob->filename;
-        $importJob->delete();
-
-        return redirect()->back()->with('success', "Berhasil menghapus import job untuk file {$filename}");
-    }
-
-    public function povertyStandardsIndex()
-    {
-        $povertyStandards = PovertyStandard::orderBy('name')->get();
-        return Inertia::render('poverty-standards/index', [
-            'povertyStandards' => $povertyStandards
-        ]);
-    }
-
-    public function povertyStandardsStore(Request $request)
-    {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'nilai_keluarga' => 'required|integer',
-            'nilai_per_tahun' => 'required|integer',
-            'log_natural' => 'required|numeric',
-        ]);
-
-        $povertyStandard = PovertyStandard::create([
-            'name' => $request->name,
-            'nilai_keluarga' => $request->nilai_keluarga,
-            'nilai_per_tahun' => $request->nilai_per_tahun,
-            'log_natural' => $request->log_natural,
-        ]);
-
-        return redirect()->back()->with('success', 'Berhasil menambahkan standar kemiskinan');
-    }
-
-    public function povertyStandardsUpdate(Request $request, PovertyStandard $povertyStandard)
-    {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'nilai_keluarga' => 'required|integer',
-            'nilai_per_tahun' => 'required|integer',
-            'log_natural' => 'required|numeric',
-        ]);
-
-        $povertyStandard->update([
-            'name' => $request->name,
-            'nilai_keluarga' => $request->nilai_keluarga,
-            'nilai_per_tahun' => $request->nilai_per_tahun,
-            'log_natural' => $request->log_natural,
-        ]);
-
-        return redirect()->back()->with('success', 'Berhasil mengupdate standar kemiskinan');
-    }
-
-    public function povertyStandardsDestroy(PovertyStandard $povertyStandard)
-    {
-        $povertyStandard->delete();
-
-        return redirect()->back()->with('success', 'Berhasil menghapus standar kemiskinan');
     }
 }

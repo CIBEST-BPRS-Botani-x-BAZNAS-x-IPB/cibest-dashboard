@@ -3,6 +3,8 @@
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\CibestFormController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\ImportJobController;
+use App\Http\Controllers\PovertyStandardController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -28,22 +30,19 @@ Route::middleware(['auth', 'verified', 'admin.verified'])->group(function () {
             Route::get('/', 'baznasIndex')->name('baznas');
             Route::post('upload', 'uploadBaznas')->name('baznas-upload');
         });
+    });
+    
+    Route::controller(ImportJobController::class)->prefix('import-jobs')->group(function () {
+        Route::get('/', 'getImportJobs')->name('import-jobs');
+        Route::get('/{importJob}', 'getImportJobDetail')->name('import-jobs-detail');
+        Route::delete('/{importJob}', 'deleteImportJob')->name('import-jobs-destroy');
+    });
 
-        // Route to get import job status
-        Route::get('import-jobs', 'getImportJobs')->name('import-jobs');
-
-        // Route to get import job detail
-        Route::get('import-jobs/{importJob}', 'getImportJobDetail')->name('import-jobs-detail');
-
-        // Route to delete import job
-        Route::delete('import-jobs/{importJob}', 'deleteImportJob')->name('import-jobs-destroy');
-
-        Route::prefix('poverty-standards')->group(function () {
-            Route::get('/', 'povertyStandardsIndex')->name('poverty-standards');
-            Route::post('/', 'povertyStandardsStore')->name('poverty-standards-store');
-            Route::put('/{povertyStandard}', 'povertyStandardsUpdate')->name('poverty-standards-update');
-            Route::delete('/{povertyStandard}', 'povertyStandardsDestroy')->name('poverty-standards-destroy');
-        });
+    Route::controller(PovertyStandardController::class)->prefix('poverty-standards')->group(function () {
+        Route::get('/', 'index')->name('poverty-standards');
+        Route::post('/', 'store')->name('poverty-standards-store');
+        Route::put('/{povertyStandard}', 'update')->name('poverty-standards-update');
+        Route::delete('/{povertyStandard}', 'destroy')->name('poverty-standards-destroy');
     });
 
     // Admin routes - requires admin role
