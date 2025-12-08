@@ -11,6 +11,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
 
@@ -18,46 +19,58 @@ class CibestImportJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    protected $filePath;
+    protected $fileName;
+    protected $fileId;
     protected $userId;
-    protected $importJobId;
 
-    public function __construct($filePath, $userId = null)
+    public function __construct(string $fileId, string $fileName, int $userId)
     {
-        $this->filePath = $filePath;
+        $this->fileId = $fileId;
+        $this->fileName = $fileName;
         $this->userId = $userId;
     }
 
     public function handle(CibestFormService $cibestFormService)
     {
-        // Ambil job id yang valid dari queue (UUID)
-        $queueJobId = method_exists($this->job, 'getJobId')
-            ? $this->job->getJobId()
-            : null;
+        // Ambil job ID dari queue driver
+        $queueJobId = method_exists($this->job, 'getJobId') ? $this->job->getJobId() : null;
 
-        // Simpan record ImportJob
+        // Simpan import job awal
         $importJob = ImportJob::create([
             'job_id'       => $queueJobId,
             'type'         => FormType::BPRS->value,
-            'filename'     => basename($this->filePath),
+            'filename'     => $this->fileName,
             'user_id'      => $this->userId,
             'status'       => 'processing',
             'started_at'   => now(),
         ]);
 
         try {
-            // Check if file exists
-            if (!Storage::exists($this->filePath)) {
-                Log::error('File not found for Cibest import: ' . $this->filePath);
+            /**
+             * STEP 1 — DOWNLOAD FILE DARI API
+             */
+            $downloadUrl = env('API_URL') . "/files/{$this->fileId}";
+            $response = Http::timeout(60)->get($downloadUrl);
+
+            if ($response->failed()) {
+                $msg = "Failed downloading file (ID: {$this->fileId})";
+
                 $importJob->update([
                     'status' => 'failed',
-                    'errors' => ['File not found'],
+                    'errors' => [$msg],
                     'completed_at' => now()
                 ]);
+
                 return;
             }
 
-            $tempPath = Storage::path($this->filePath);
+            // Simpan file sementara
+            $tempPath = "temp-imports/" . uniqid() . '_' . $this->fileName;
+            Storage::put($tempPath, $response->body());
+
+            /**
+             * STEP 2 — PROSES IMPORT
+             */
             $import = new CibestImport();
             $import->import($tempPath);
 
@@ -82,11 +95,6 @@ class CibestImportJob implements ShouldQueue
                     'errors' => $errors,
                     'completed_at' => now()
                 ]);
-
-                Log::error('Cibest import failed', [
-                    'file_path' => $this->filePath,
-                    'errors' => $errors
-                ]);
             } else {
                 // Process the imported data
                 $cibestFormService->processFormData($import->data, FormType::BPRS->value, $this->userId);
@@ -97,31 +105,18 @@ class CibestImportJob implements ShouldQueue
                     'processed_rows' => count($import->data),
                     'completed_at' => now()
                 ]);
-
-                Log::info('Cibest import completed successfully', [
-                    'file_path' => $this->filePath
-                ]);
             }
 
-            // Clean up temporary file
-            Storage::delete($this->filePath);
+             // Hapus file sementara
+            Storage::delete($tempPath);
+            Http::timeout(60)->delete($downloadUrl);
         } catch (\Exception $e) {
-            Log::error('Error in CibestImportJob: ' . $e->getMessage(), [
-                'exception' => $e,
-                'file_path' => $this->filePath
-            ]);
-
             // Update the import job record with failure status
             $importJob->update([
                 'status' => 'failed',
                 'errors' => [$e->getMessage()],
                 'completed_at' => now()
             ]);
-
-            // Clean up temporary file even if there's an error
-            if (Storage::exists($this->filePath)) {
-                Storage::delete($this->filePath);
-            }
 
             throw $e; // Re-throw to trigger failed job handling
         }

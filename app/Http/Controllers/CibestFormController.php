@@ -6,7 +6,7 @@ use App\Jobs\BaznasImportJob;
 use App\Jobs\CibestImportJob;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Http;
 use Inertia\Inertia;
 
 class CibestFormController extends Controller
@@ -28,13 +28,20 @@ class CibestFormController extends Controller
 
         $file = $request->file('file');
 
-        // Store the file temporarily in the storage
-        $unique_name = uniqid() . '_' . $file->getClientOriginalName();
-        $tempPath = Storage::putFileAs('temp-imports', $file, $unique_name);
+        // Store the file temporarily in the api service
+        $api_url = env('API_URL');
+        $response = Http::attach(
+            'file',
+            file_get_contents($file->getRealPath()),
+            $file->getClientOriginalName()
+        )->post($api_url . '/upload');
+
+        if ($response->failed()) {
+            return redirect()->back()->with('error', "File {$file->getClientOriginalName()} gagal diupload. {$response['error']}.");
+        }
 
         // Dispatch the import job to run in the background
-        CibestImportJob::dispatch($tempPath, Auth::user()->id)->withoutDelay();
-
+        CibestImportJob::dispatch($response['file']['id'], $response['file']['originalName'], Auth::user()->id)->withoutDelay();
         return redirect()->back()->with('success', "File {$file->getClientOriginalName()} sedang diproses di latar belakang. Silakan periksa kembali nanti untuk hasilnya.");
     }
 
@@ -55,13 +62,20 @@ class CibestFormController extends Controller
 
         $file = $request->file('file');
 
-        // Store the file temporarily in the storage
-        $unique_name = uniqid() . '_' . $file->getClientOriginalName();
-        $tempPath = Storage::putFileAs('temp-imports', $file, $unique_name);
+        // Store the file temporarily in the api service
+        $api_url = env('API_URL');
+        $response = Http::attach(
+            'file',
+            file_get_contents($file->getRealPath()),
+            $file->getClientOriginalName()
+        )->post($api_url . '/upload');
+
+        if ($response->failed()) {
+            return redirect()->back()->with('error', "File {$file->getClientOriginalName()} gagal diupload. {$response['error']}.");
+        }
 
         // Dispatch the import job to run in the background
-        BaznasImportJob::dispatch($tempPath, Auth::user()->id)->withoutDelay();
-
+        BaznasImportJob::dispatch($response['file']['id'], $response['file']['originalName'], Auth::user()->id)->withoutDelay();
         return redirect()->back()->with('success', "File {$file->getClientOriginalName()} sedang diproses di latar belakang. Silakan periksa kembali nanti untuk hasilnya.");
     }
 }
