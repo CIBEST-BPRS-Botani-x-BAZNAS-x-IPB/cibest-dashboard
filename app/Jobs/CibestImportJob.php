@@ -17,6 +17,13 @@ use Illuminate\Support\Facades\Log;
 
 class CibestImportJob implements ShouldQueue
 {
+    /**
+     * The number of times the job may be attempted.
+     *
+     * @var int
+     */
+    public $tries = 3;
+
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     protected $fileName;
