@@ -21,8 +21,8 @@ class BaznasImportJob implements ShouldQueue
      *
      * @var int
      */
-    public $tries = 3;
-    
+    public $tries = 1;
+
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     protected $fileName;
