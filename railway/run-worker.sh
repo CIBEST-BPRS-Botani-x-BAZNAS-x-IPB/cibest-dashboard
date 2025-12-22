@@ -3,4 +3,4 @@
 
 # This command runs the queue worker.
 # An alternative is to use the php artisan queue:listen command
-php artisan queue:work --daemon --sleep=3 --tries=3 --memory=1024 --timeout=0
+php artisan queue:listen --sleep=3 --tries=3 --memory=1024 --timeout=0
