@@ -94,24 +94,24 @@ export function IndonesiaMap({ provinces, povertyStandardId }: IndonesiaMapProps
                   break;
                 }
 
-                // Common variations and abbreviations
-                if (compareProvinceName.includes("jawa") && geoProvinceName.includes("jawa")) {
-                  matchingProvince = prov;
-                  break;
-                }
-                if ((compareProvinceName.includes("sumatera") || compareProvinceName.includes("sumatra")) &&
-                    (geoProvinceName.includes("sumatera") || geoProvinceName.includes("sumatra"))) {
-                  matchingProvince = prov;
-                  break;
-                }
-                if (compareProvinceName.includes("kalimantan") && geoProvinceName.includes("kalimantan")) {
-                  matchingProvince = prov;
-                  break;
-                }
-                if (compareProvinceName.includes("sulawesi") && geoProvinceName.includes("sulawesi")) {
-                  matchingProvince = prov;
-                  break;
-                }
+                // // Common variations and abbreviations
+                // if (compareProvinceName.includes("jawa") && geoProvinceName.includes("jawa")) {
+                //   matchingProvince = prov;
+                //   break;
+                // }
+                // if ((compareProvinceName.includes("sumatera") || compareProvinceName.includes("sumatra")) &&
+                //     (geoProvinceName.includes("sumatera") || geoProvinceName.includes("sumatra"))) {
+                //   matchingProvince = prov;
+                //   break;
+                // }
+                // if (compareProvinceName.includes("kalimantan") && geoProvinceName.includes("kalimantan")) {
+                //   matchingProvince = prov;
+                //   break;
+                // }
+                // if (compareProvinceName.includes("sulawesi") && geoProvinceName.includes("sulawesi")) {
+                //   matchingProvince = prov;
+                //   break;
+                // }
               }
 
               let fillColor = "#9ca3af"; // Default to gray if no match found (indicating no data)
@@ -177,24 +177,24 @@ export function IndonesiaMap({ provinces, povertyStandardId }: IndonesiaMapProps
                   break;
                 }
 
-                // Common variations and abbreviations
-                if (compareProvinceName.includes("jawa") && geoProvinceName.toLowerCase().includes("jawa")) {
-                  matchingProvince = prov;
-                  break;
-                }
-                if ((compareProvinceName.includes("sumatera") || compareProvinceName.includes("sumatra")) &&
-                    (geoProvinceName.toLowerCase().includes("sumatera") || geoProvinceName.toLowerCase().includes("sumatra"))) {
-                  matchingProvince = prov;
-                  break;
-                }
-                if (compareProvinceName.includes("kalimantan") && geoProvinceName.toLowerCase().includes("kalimantan")) {
-                  matchingProvince = prov;
-                  break;
-                }
-                if (compareProvinceName.includes("sulawesi") && geoProvinceName.toLowerCase().includes("sulawesi")) {
-                  matchingProvince = prov;
-                  break;
-                }
+                // // Common variations and abbreviations
+                // if (compareProvinceName.includes("jawa") && geoProvinceName.toLowerCase().includes("jawa")) {
+                //   matchingProvince = prov;
+                //   break;
+                // }
+                // if ((compareProvinceName.includes("sumatera") || compareProvinceName.includes("sumatra")) &&
+                //     (geoProvinceName.toLowerCase().includes("sumatera") || geoProvinceName.toLowerCase().includes("sumatra"))) {
+                //   matchingProvince = prov;
+                //   break;
+                // }
+                // if (compareProvinceName.includes("kalimantan") && geoProvinceName.toLowerCase().includes("kalimantan")) {
+                //   matchingProvince = prov;
+                //   break;
+                // }
+                // if (compareProvinceName.includes("sulawesi") && geoProvinceName.toLowerCase().includes("sulawesi")) {
+                //   matchingProvince = prov;
+                //   break;
+                // }
               }
 
               let quadrant = "No Data";
@@ -202,6 +202,7 @@ export function IndonesiaMap({ provinces, povertyStandardId }: IndonesiaMapProps
 
               if (matchingProvince) {
                 const dominantQuadrant = matchingProvince.dominant;
+                console.log(matchingProvince);
 
                 switch(dominantQuadrant) {
                   case "Q1":

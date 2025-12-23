@@ -89,7 +89,7 @@ export function ProvinceTable({ povertyStandards, allProvincesByStandard }: Prov
       <Dialog open={showModal} onOpenChange={setShowModal}>
         <DialogContent className="max-w-4xl max-h-96 overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>Detail Sebaran Responden per Provinsi - {povertyStandards.find(s => s.id === selectedStandard)?.name}</DialogTitle>
+            <DialogTitle>Detail Sebaran Responden per Provinsi - {povertyStandards[selectedStandard].name}</DialogTitle>
           </DialogHeader>
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
