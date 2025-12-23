@@ -5,20 +5,23 @@ import { StandardTables } from "@/components/standard-tables"
 import { IndicatorsTable } from "@/components/indicators-table"
 import { DashboardFooter } from "@/components/dashboard-footer"
 import { Link, usePage } from "@inertiajs/react"
-import { QuadrantData, SharedData, PovertyStandard, AllProvincesByStandard, PovertyIndicator, Province } from "@/types"
+import { QuadrantData, SharedData, PovertyStandard, AllProvincesByStandard, PovertyIndicator, Province, RespondentBreakdown } from "@/types"
 import { about, dashboard, login, register } from "@/routes"
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 
 export default function Welcome({
   canRegister = true,
   respondentCount,
+  respondentBreakdown,
   quadrantDistribution,
   povertyStandards,
   povertyIndicators,
-  provinces,
+  provinces, // Not used in this component
   allProvincesByStandard
 }: {
   canRegister?: boolean;
   respondentCount: number;
+  respondentBreakdown: RespondentBreakdown;
   quadrantDistribution: QuadrantData[];
   povertyStandards: PovertyStandard[];
   povertyIndicators: PovertyIndicator[];
@@ -39,9 +42,22 @@ export default function Welcome({
             </div>
             <div className="text-center">
               <p className="text-sm text-gray-600">Jumlah Responden</p>
-              <p className="text-3xl font-bold text-teal-600">
-                {respondentCount}
-              </p>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <p className="text-3xl font-bold text-teal-600 cursor-pointer hover:text-teal-700 transition-colors">
+                      {respondentCount}
+                    </p>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <div className="text-xs">
+                      <p className="font-semibold">Detail Responden:</p>
+                      <p>BPRS: {respondentBreakdown.bprs}</p>
+                      <p>BAZNAS: {respondentBreakdown.baznas}</p>
+                    </div>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
             </div>
             <nav className="flex items-center justify-end gap-4">
               <Link

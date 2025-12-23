@@ -84,3 +84,8 @@ export interface Province {
 export interface AllProvincesByStandard {
   [key: number]: Province[];
 }
+
+export interface RespondentBreakdown {
+  bprs: number;
+  baznas: number;
+}

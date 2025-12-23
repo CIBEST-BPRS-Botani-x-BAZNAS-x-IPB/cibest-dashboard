@@ -21,6 +21,16 @@ class DashboardController extends Controller
         // Get total number of respondents
         $respondentCount = CibestForm::count();
 
+        // Get breakdown of respondents by type (BPRS/BAZNAS)
+        $respondentBreakdown = CibestForm::select('type', DB::raw('COUNT(*) as count'))
+            ->groupBy('type')
+            ->get()
+            ->pluck('count', 'type')
+            ->toArray();
+
+        $bprsCount = $respondentBreakdown['bprs'] ?? 0;
+        $baznasCount = $respondentBreakdown['baznas'] ?? 0;
+
         // Get distribution of quadrants with poverty standard names
         $quadrantDistribution = [];
 
@@ -193,6 +203,10 @@ class DashboardController extends Controller
         return Inertia::render('welcome', [
             'canRegister' => Features::enabled(Features::registration()),
             'respondentCount' => $respondentCount,
+            'respondentBreakdown' => [
+                'bprs' => $bprsCount,
+                'baznas' => $baznasCount,
+            ],
             'quadrantDistribution' => $quadrantDistribution,
             'povertyStandards' => $formattedStandards,
             'povertyIndicators' => $povertyIndicators,
