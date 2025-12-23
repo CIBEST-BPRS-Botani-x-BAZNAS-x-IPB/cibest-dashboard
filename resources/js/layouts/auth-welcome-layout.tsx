@@ -1,5 +1,5 @@
 import { Link } from "@inertiajs/react"
-import { dashboard, login, register } from "@/routes"
+import { about, dashboard, login, register } from "@/routes"
 import { usePage } from "@inertiajs/react"
 import { SharedData } from "@/types"
 
@@ -27,6 +27,12 @@ export default function AuthWelcomeLayout({
                             <p className="text-gray-600 mt-1">Kesejahteraan Holistik UKM dan Pemberdayaan Dunia dan Akhirat</p>
                         </div>
                         <nav className="flex items-center justify-end gap-4">
+                            <Link
+                                href={about()}
+                                className="inline-block px-5 py-1.5 text-sm font-semibold text-teal-600 hover:text-teal-700 underline decoration-2 underline-offset-4"
+                            >
+                                About
+                            </Link>
                             {auth.user ? (
                                 <Link
                                     href={dashboard()}

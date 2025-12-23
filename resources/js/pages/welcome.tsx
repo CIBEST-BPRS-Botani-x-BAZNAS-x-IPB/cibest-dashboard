@@ -6,7 +6,7 @@ import { IndicatorsTable } from "@/components/indicators-table"
 import { DashboardFooter } from "@/components/dashboard-footer"
 import { Link, usePage } from "@inertiajs/react"
 import { QuadrantData, SharedData, PovertyStandard, AllProvincesByStandard, PovertyIndicator, Province } from "@/types"
-import { dashboard, login, register } from "@/routes"
+import { about, dashboard, login, register } from "@/routes"
 
 export default function Welcome({
   canRegister = true,
@@ -37,13 +37,19 @@ export default function Welcome({
               <h1 className="text-4xl font-bold text-teal-600">Dashboard CIBEST</h1>
               <p className="text-gray-600 mt-1">Kesejahteraan Holistik UKM dan Pemberdayaan Dunia dan Akhirat</p>
             </div>
-            <div className="text-right">
+            <div className="text-center">
               <p className="text-sm text-gray-600">Jumlah Responden</p>
               <p className="text-3xl font-bold text-teal-600">
                 {respondentCount}
               </p>
             </div>
             <nav className="flex items-center justify-end gap-4">
+              <Link
+                href={about()}
+                className="inline-block px-5 py-1.5 text-sm font-semibold text-teal-600 hover:text-teal-700 underline decoration-2 underline-offset-4"
+              >
+                About
+              </Link>
               {auth.user ? (
                 <Link
                   href={dashboard()}
