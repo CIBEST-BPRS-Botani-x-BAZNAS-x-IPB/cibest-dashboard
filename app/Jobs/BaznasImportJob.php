@@ -6,6 +6,7 @@ use App\Enums\FormType;
 use App\Imports\BaznasImport;
 use App\Models\ImportJob;
 use App\Services\CibestFormService;
+use Exception;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -22,12 +23,14 @@ class BaznasImportJob implements ShouldQueue
      * @var int
      */
     public $tries = 1;
+    public $timeout = 300; // 5 menit
 
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     protected $fileName;
     protected $fileId;
     protected $userId;
+    protected $importJob;
 
     public function __construct(string $fileId, string $fileName, int $userId)
     {
@@ -51,80 +54,79 @@ class BaznasImportJob implements ShouldQueue
             'started_at'   => now(),
         ]);
 
-        try {
-            /**
-             * STEP 1 — DOWNLOAD FILE DARI API
-             */
-            $downloadUrl = env('API_URL') . "/files/{$this->fileId}";
-            $response = Http::timeout(60)->get($downloadUrl);
+        $this->importJob = $importJob;
 
-            if ($response->failed()) {
-                $msg = "Failed downloading file (ID: {$this->fileId})";
+        /**
+         * STEP 1 — DOWNLOAD FILE DARI API
+         */
+        $downloadUrl = env('API_URL') . "/files/{$this->fileId}";
+        $response = Http::timeout(60)->get($downloadUrl);
 
-                $importJob->update([
-                    'status' => 'failed',
-                    'errors' => [$msg],
-                    'completed_at' => now()
-                ]);
+        if ($response->failed()) {
+            $msg = "Failed downloading file (ID: {$this->fileId})";
 
-                return;
-            }
-
-            // Simpan file sementara
-            $tempPath = "temp-imports/" . uniqid() . '_' . $this->fileName;
-            Storage::put($tempPath, $response->body());
-
-            /**
-             * STEP 2 — PROSES IMPORT
-             */
-            $import = new BaznasImport();
-            $import->import($tempPath);
-
-            if ($import->failures()->isNotEmpty()) {
-                // Handle failures
-                $errors = [];
-                foreach ($import->failures() as $failure) {
-                    $errors[] = [
-                        'row' => $failure->row(),
-                        'attribute' => $import->mapping($failure->attribute()),
-                        'error' => collect($failure->errors())->map(function ($err) {
-                            $clean = preg_replace('/^\d+\s*/', '', $err);
-                            return ucfirst($clean);
-                        })->join(', '),
-                        'value' => ($failure->values())[$failure->attribute()]
-                    ];
-                }
-
-                // Update the import job record with failure status
-                $importJob->update([
-                    'status' => 'failed',
-                    'errors' => $errors,
-                    'completed_at' => now()
-                ]);
-            } else {
-                // Process the imported data
-                $cibestFormService->processFormData($import->data, FormType::BAZNAS->value, $this->userId);
-
-                // Update the import job record with success status
-                $importJob->update([
-                    'status' => 'completed',
-                    'processed_rows' => count($import->data),
-                    'completed_at' => now()
-                ]);
-            }
-
-            // Hapus file sementara
-            Storage::delete($tempPath);
-            Http::timeout(60)->delete($downloadUrl);
-        } catch (\Exception $e) {
-            // Update the import job record with failure status
             $importJob->update([
                 'status' => 'failed',
-                'errors' => [$e->getMessage()],
+                'errors' => [$msg],
                 'completed_at' => now()
             ]);
 
-            throw $e; // Re-throw to trigger failed job handling
+            return;
         }
+
+        // Simpan file sementara
+        $tempPath = "temp-imports/" . uniqid() . '_' . $this->fileName;
+        Storage::put($tempPath, $response->body());
+
+        /**
+         * STEP 2 — PROSES IMPORT
+         */
+        $import = new BaznasImport();
+        $import->import($tempPath);
+
+        if ($import->failures()->isNotEmpty()) {
+            // Handle failures
+            $errors = [];
+            foreach ($import->failures() as $failure) {
+                $errors[] = [
+                    'row' => $failure->row(),
+                    'attribute' => $import->mapping($failure->attribute()),
+                    'error' => collect($failure->errors())->map(function ($err) {
+                        $clean = preg_replace('/^\d+\s*/', '', $err);
+                        return ucfirst($clean);
+                    })->join(', '),
+                    'value' => ($failure->values())[$failure->attribute()]
+                ];
+            }
+
+            // Update the import job record with failure status
+            $importJob->update([
+                'status' => 'failed',
+                'errors' => $errors,
+                'completed_at' => now()
+            ]);
+        } else {
+            // Process the imported data
+            $cibestFormService->processFormData($import->data, FormType::BAZNAS->value, $this->userId);
+
+            // Update the import job record with success status
+            $importJob->update([
+                'status' => 'completed',
+                'processed_rows' => count($import->data),
+                'completed_at' => now()
+            ]);
+        }
+
+        // Hapus file sementara
+        Storage::delete($tempPath);
+        Http::timeout(60)->delete($downloadUrl);
+    }
+
+    public function failed(Exception $e) {
+        $this->importJob->update([
+            'status' => 'failed',
+            'errors' => [$e->getMessage()],
+            'completed_at' => now()
+        ]);
     }
 }
