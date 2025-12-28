@@ -61,6 +61,8 @@ class CibestImportJob implements ShouldQueue
                     'completed_at' => now()
                 ]);
 
+                $this->job?->delete();
+
                 return;
             }
 
@@ -107,9 +109,10 @@ class CibestImportJob implements ShouldQueue
                 ]);
             }
 
-             // Hapus file sementara
+             // Hapus file sementara dan jobs
             Storage::delete($tempPath);
             Http::timeout(60)->delete($downloadUrl);
+            $this->job?->delete();
         } catch (\Exception $e) {
             // Update the import job record with failure status
             $importJob->update([
@@ -118,7 +121,7 @@ class CibestImportJob implements ShouldQueue
                 'completed_at' => now()
             ]);
 
-            throw $e; // Re-throw to trigger failed job handling
+            $this->job?->delete();
         }
     }
 }
