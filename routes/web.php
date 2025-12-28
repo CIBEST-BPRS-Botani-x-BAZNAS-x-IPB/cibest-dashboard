@@ -12,7 +12,13 @@ Route::get('/', [DashboardController::class, 'index'])->name('home');
 
 Route::get('/about', function () {
     return Inertia::render('CibestInfo', [
-        'description' => 'CIBEST (CIBEST Islamic Poverty and Wellbeing Index) adalah model pengukuran kemiskinan yang mengintegrasikan aspek material dan spiritual dalam mengukur tingkat kesejahteraan masyarakat.',
+        'description' => 'Dashboard Model CIBEST merupakan instrumen visual dan analitik yang dikembangkan untuk menyajikan pengukuran dampak keuangan syariah secara multidimensional berbasis nilai-nilai Islam. Dashboard ini berangkat dari model CIBEST yang diperkenalkan oleh Beik dan Arsyianti (2015), yang memadukan dimensi kesejahteraan material dan spiritual dalam satu kerangka pengukuran holistik. Melalui pendekatan ini, kondisi rumah tangga dipetakan ke dalam empat kuadran kesejahteraan, yaitu kesejahteraan absolut, kesejahteraan material saja, kesejahteraan spiritual saja, dan kemiskinan absolut.
+
+Secara fungsional, dashboard dirancang untuk memvisualisasikan indeks kesejahteraan material–spiritual secara intuitif, kuantitatif, dan mudah diinterpretasikan oleh para pemangku kepentingan. Data yang ditampilkan memungkinkan pengguna untuk menilai perubahan tingkat kesejahteraan mustahik atau penerima manfaat sebelum dan sesudah intervensi keuangan syariah. Dashboard ini dikembangkan sebagai versi beta yang tidak hanya berfokus pada zakat, tetapi juga disiapkan untuk mengakomodasi perluasan cakupan ke instrumen keuangan sosial syariah lainnya (infak, sedekah, wakaf produktif) serta keuangan syariah komersial seperti pembiayaan mikro, pembiayaan UMKM, dan layanan fintech syariah.
+
+Dari sisi sistem, Dashboard Model CIBEST didukung oleh fondasi arsitektur data yang mengintegrasikan data primer dan sekunder, serta indikator multidimensi yang selaras dengan prinsip maqashid syariah. Dashboard ini menghasilkan keluaran utama berupa visualisasi indeks kesejahteraan material–spiritual dan laporan analisis awal (early validation report) yang dapat digunakan sebagai dasar evaluasi, perbaikan program, dan pengambilan keputusan. Secara strategis, dashboard ini berperan sebagai alat bantu transparansi dan akuntabilitas bagi lembaga zakat dan wakaf, instrumen evaluasi efektivitas pembiayaan bagi lembaga keuangan syariah, serta sumber informasi berbasis bukti bagi pemerintah dan regulator.
+
+Beik, I. S., & Arsyianti, L. D. (2015). Construction of CIBEST model as measurement of poverty and welfare indices from Islamic perspective. Al-Iqtishad: Jurnal Ilmu Ekonomi Syariah, 7(1), 87-104.',
         'provinces' => [],
         'cibestIndexes' => [
             ['no' => 1, 'standard' => 'Miskin Ekstrem', 'index' => 0.00],

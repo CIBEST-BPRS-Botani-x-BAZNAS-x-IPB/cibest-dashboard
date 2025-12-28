@@ -14,7 +14,6 @@ import {
 import { QUADRANT_COLORS } from '@/lib/constants';
 import { QuadrantData } from '@/types';
 import { useState, useRef } from 'react';
-import html2canvas from 'html2canvas';
 import {
     Bar,
     BarChart,
@@ -118,22 +117,87 @@ export function QuadrantDistribution({
           ]
         : [];
 
-    const downloadChartAsImage = async () => {
-        if (!chartRef.current) return;
+    const downloadChartAsImage = () => {
+        const svgElement = chartRef.current?.querySelector('svg');
+        if (!svgElement) {
+            alert('Chart not found. Please try again.');
+            return;
+        }
 
         try {
-            const canvas = await html2canvas(chartRef.current, {
-                backgroundColor: '#ffffff',
-                scale: 2,
-            });
-
-            const link = document.createElement('a');
-            link.download = `quadrant-distribution-${data[standard]?.name || 'chart'}.png`;
-            link.href = canvas.toDataURL('image/png');
-            link.click();
+            // Clone the SVG to avoid modifying the original
+            const clonedSvg = svgElement.cloneNode(true) as SVGElement;
+            
+            // Get dimensions
+            const bbox = svgElement.getBoundingClientRect();
+            const width = bbox.width;
+            const height = bbox.height;
+            
+            // Set explicit dimensions and namespace
+            clonedSvg.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
+            clonedSvg.setAttribute('width', String(width));
+            clonedSvg.setAttribute('height', String(height));
+            
+            // Serialize the cloned SVG
+            const svgString = new XMLSerializer().serializeToString(clonedSvg);
+            
+            // Create canvas
+            const canvas = document.createElement('canvas');
+            canvas.width = width * 2; // 2x for better quality
+            canvas.height = height * 2;
+            const ctx = canvas.getContext('2d');
+            
+            if (!ctx) {
+                alert('Failed to create canvas.');
+                return;
+            }
+            
+            // Create blob and object URL
+            const blob = new Blob([svgString], { type: 'image/svg+xml;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            
+            // Create image
+            const img = new Image();
+            
+            img.onload = () => {
+                // Scale the context
+                ctx.scale(2, 2);
+                
+                // White background
+                ctx.fillStyle = '#ffffff';
+                ctx.fillRect(0, 0, width, height);
+                
+                // Draw image
+                ctx.drawImage(img, 0, 0, width, height);
+                
+                // Convert canvas to blob and download
+                canvas.toBlob((pngBlob) => {
+                    if (pngBlob) {
+                        const pngUrl = URL.createObjectURL(pngBlob);
+                        const link = document.createElement('a');
+                        link.href = pngUrl;
+                        link.download = `quadrant-distribution-${data[standard]?.name || 'chart'}.png`;
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
+                        URL.revokeObjectURL(pngUrl);
+                    } else {
+                        alert('Failed to create PNG image.');
+                    }
+                    URL.revokeObjectURL(url);
+                }, 'image/png');
+            };
+            
+            img.onerror = () => {
+                alert('Failed to load SVG. Please try again.');
+                URL.revokeObjectURL(url);
+            };
+            
+            img.src = url;
+            
         } catch (error) {
-            console.error('Error capturing chart:', error);
-            alert('Failed to download chart. Please try again.');
+            console.error('Export error:', error);
+            alert('Failed to export chart. Please try again.');
         }
     };
 
